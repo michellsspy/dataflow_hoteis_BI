@@ -179,19 +179,19 @@ gcloud dataflow flex-template run "bronze-job-$(date +%Y%m%d-%H%M%S)" \
 
 ---
 ## 🧠 Boas Práticas Adotadas
-Arquitetura Medalhão (Bronze/Silver/Gold) para controle de qualidade e rastreabilidade.
+* Arquitetura Medalhão (Bronze/Silver/Gold) para controle de qualidade e rastreabilidade.
 
-Imagens e templates versionados para rollback seguro.
+* Imagens e templates versionados para rollback seguro.
 
-CI/CD desacoplado por camada, facilitando manutenção e evolução.
+* CI/CD desacoplado por camada, facilitando manutenção e evolução.
 
-Parâmetros externos (YAML) para controle de ambientes (dev/prod).
+* Parâmetros externos (YAML) para controle de ambientes (dev/prod).
 
-Governança de dados via padronização de schema e logs centralizados.
+* Governança de dados via padronização de schema e logs centralizados.
 
-Testes unitários e integração contínua antes de cada build.
+* Testes unitários e integração contínua antes de cada build.
 
-Segurança e isolamento usando Service Accounts e Secrets do GCP.
+* Segurança e isolamento usando Service Accounts e Secrets do GCP.
 
 ## 🧾 Tecnologias Principais
 * Categoria	Ferramenta / Serviço
