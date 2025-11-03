@@ -211,4 +211,5 @@ Este projeto segue o padrão MIT License (ajustável conforme política da empre
 
 ## 👨‍💻 Autor
 > Michel Santana — Engenheiro de Dados
+
 Projeto desenvolvido como base para uma plataforma analítica unificada de BI hoteleiro, utilizando as melhores práticas de engenharia de dados em GCP.
