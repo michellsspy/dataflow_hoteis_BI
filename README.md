@@ -4,7 +4,6 @@
 **Hotel Dataflow BI Platform** é uma arquitetura moderna de ingestão, processamento e análise de dados para uma **rede hoteleira**, desenvolvida com **Google Cloud Dataflow (Apache Beam - Flex Templates)**.  
 O projeto implementa o **modelo medalhão (Bronze → Silver → Gold)**, garantindo governança, versionamento, escalabilidade e qualidade de dados de ponta a ponta — da ingestão bruta até a camada analítica em BigQuery.
 
----
 
 ## 🚀 Visão Geral
 
@@ -12,7 +11,6 @@ A plataforma foi desenhada para operar em ambientes **DataOps e CI/CD**, utiliza
 
 Cada camada é empacotada em um **container Docker independente**, contendo seu próprio `Dockerfile`, `metadata.json` e pipelines específicos, seguindo as recomendações oficiais do **Google Cloud para Dataflow Flex Templates**.
 
----
 
 ## 🧱 Arquitetura do Repositório
 
@@ -100,7 +98,6 @@ dataflow-pipelines/
 
 ````
 
----
 
 ## 🧩 Descrição das Camadas Medalhão
 
@@ -110,7 +107,6 @@ dataflow-pipelines/
 | **Silver** | Dados limpos e padronizados | Normaliza schemas, remove duplicidades, aplica regras de negócio e grava no BigQuery (Trusted Zone) | `pipeline_silver.py` lê GCS raw → escreve em BigQuery |
 | **Gold** | Dados analíticos e agregados | KPIs, métricas e modelos dimensionais para BI e dashboards | `pipeline_gold.py` lê tabelas Trusted → cria marts e visões |
 
----
 
 ## 📂 Estrutura de Arquivos e Funções
 
@@ -143,7 +139,6 @@ dataflow-pipelines/
 | `ci/cloudbuild.*.yaml` | Todas | Pipeline CI/CD no Cloud Build | CI/CD |
 | `templates/dev/*.json` | Todas | Templates gerados no GCS (Flex) | Output |
 
----
 
 ## ⚙️ CI/CD (Google Cloud Build)
 
@@ -161,7 +156,6 @@ O pipeline de CI/CD executa:
 2. Build e push da imagem Docker no Artifact Registry;
 3. Criação do template Flex no bucket GCS correspondente.
 
----
 
 ## ☁️ Deploy Manual (sem CI/CD)
 
@@ -184,7 +178,6 @@ gcloud dataflow flex-template run "bronze-job-$(date +%Y%m%d-%H%M%S)" \
   --parameters input_url=gs://$PROJECT_ID-raw/input/*.json,output_path=gs://$PROJECT_ID-raw/bronze/out/
 ```
 
----
 
 ## 🧠 Boas Práticas Adotadas
 
@@ -196,7 +189,6 @@ gcloud dataflow flex-template run "bronze-job-$(date +%Y%m%d-%H%M%S)" \
 * **Testes unitários e integração contínua** antes de cada build.
 * **Segurança e isolamento** usando Service Accounts e Secrets do GCP.
 
----
 
 ## 🧾 Tecnologias Principais
 
@@ -210,13 +202,11 @@ gcloud dataflow flex-template run "bronze-job-$(date +%Y%m%d-%H%M%S)" \
 | Linguagem       | Python 3.9+                     |
 | Modelo de Dados | Medalhão (Bronze, Silver, Gold) |
 
----
 
 ## 📜 Licença
 
 Este projeto segue o padrão **MIT License** (ajustável conforme política da empresa).
 
----
 
 ## 👨‍💻 Autor
 
