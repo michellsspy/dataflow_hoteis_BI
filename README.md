@@ -15,6 +15,7 @@ Cada camada é empacotada em um **container Docker independente**, contendo seu 
 
 ## 🧱 Arquitetura do Repositório
 
+```text
 dataflow-pipelines/
 ├── README.md
 ├── .gitignore
@@ -35,9 +36,9 @@ dataflow-pipelines/
 │ └── common.yaml
 │
 ├── src/
-│ ├── init.py
+│ ├── __init__.py
 │ ├── common/
-│ │ ├── init.py
+│ │ ├── __init__.py
 │ │ ├── io_utils.py
 │ │ ├── transforms_utils.py
 │ │ ├── schema_utils.py
@@ -45,21 +46,21 @@ dataflow-pipelines/
 │ │ └── options.py
 │ │
 │ ├── bronze/
-│ │ ├── init.py
+│ │ ├── __init__.py
 │ │ ├── pipeline_bronze.py
 │ │ ├── transforms_bronze.py
 │ │ ├── Dockerfile
 │ │ └── metadata.json
 │ │
 │ ├── silver/
-│ │ ├── init.py
+│ │ ├── __init__.py
 │ │ ├── pipeline_silver.py
 │ │ ├── transforms_silver.py
 │ │ ├── Dockerfile
 │ │ └── metadata.json
 │ │
 │ └── gold/
-│ ├── init.py
+│ ├── __init__.py
 │ ├── pipeline_gold.py
 │ ├── transforms_gold.py
 │ ├── Dockerfile
@@ -84,7 +85,7 @@ dataflow-pipelines/
 │ └── run_gold_dev.sh
 │
 ├── tests/
-│ ├── init.py
+│ ├── __init__.py
 │ ├── test_transforms_bronze.py
 │ ├── test_transforms_silver.py
 │ ├── test_transforms_gold.py
@@ -94,9 +95,6 @@ dataflow-pipelines/
 ├── cloudbuild.bronze.yaml
 ├── cloudbuild.silver.yaml
 └── cloudbuild.gold.yaml
-
-perl
-Copiar código
 
 ---
 
@@ -161,7 +159,6 @@ Criação do template Flex no bucket GCS correspondente.
 
 ☁️ Deploy Manual (sem CI/CD)
 bash
-Copiar código
 gcloud builds submit src/bronze \
   --tag us-central1-docker.pkg.dev/$PROJECT_ID/dataflow/bronze:latest
 
@@ -172,7 +169,6 @@ gcloud dataflow flex-template build gs://$PROJECT_ID-templates/dev/bronze_templa
 Execução:
 
 bash
-Copiar código
 gcloud dataflow flex-template run "bronze-job-$(date +%Y%m%d-%H%M%S)" \
   --template-file-gcs-location gs://$PROJECT_ID-templates/dev/bronze_template.json \
   --region us-central1 \
