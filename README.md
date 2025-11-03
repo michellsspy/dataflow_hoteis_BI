@@ -156,9 +156,10 @@ Testes unitários (pytest);
 Build e push da imagem Docker no Artifact Registry;
 
 Criação do template Flex no bucket GCS correspondente.
-
-☁️ Deploy Manual (sem CI/CD)
-bash
+```
+---
+## ☁️ Deploy Manual (sem CI/CD)
+```bash
 gcloud builds submit src/bronze \
   --tag us-central1-docker.pkg.dev/$PROJECT_ID/dataflow/bronze:latest
 
@@ -166,14 +167,18 @@ gcloud dataflow flex-template build gs://$PROJECT_ID-templates/dev/bronze_templa
   --image us-central1-docker.pkg.dev/$PROJECT_ID/dataflow/bronze:latest \
   --sdk-language PYTHON \
   --metadata-file src/bronze/metadata.json
+```
 Execução:
 
-bash
+```bash
 gcloud dataflow flex-template run "bronze-job-$(date +%Y%m%d-%H%M%S)" \
   --template-file-gcs-location gs://$PROJECT_ID-templates/dev/bronze_template.json \
   --region us-central1 \
   --parameters input_url=gs://$PROJECT_ID-raw/input/*.json,output_path=gs://$PROJECT_ID-raw/bronze/out/
-🧠 Boas Práticas Adotadas
+```
+
+---
+## 🧠 Boas Práticas Adotadas
 Arquitetura Medalhão (Bronze/Silver/Gold) para controle de qualidade e rastreabilidade.
 
 Imagens e templates versionados para rollback seguro.
@@ -187,20 +192,23 @@ Governança de dados via padronização de schema e logs centralizados.
 Testes unitários e integração contínua antes de cada build.
 
 Segurança e isolamento usando Service Accounts e Secrets do GCP.
+---
 
-🧾 Tecnologias Principais
-Categoria	Ferramenta / Serviço
-Orquestração	Google Dataflow (Apache Beam)
-Armazenamento	Google Cloud Storage / BigQuery
-CI/CD	Cloud Build + Artifact Registry
-Infraestrutura	Docker (Flex Templates)
-Observabilidade	Stackdriver Logging
-Linguagem	Python 3.9+
-Modelo de Dados	Medalhão (Bronze, Silver, Gold)
+## 🧾 Tecnologias Principais
+* Categoria	Ferramenta / Serviço
+* Orquestração	Google Dataflow (Apache Beam)
+* Armazenamento	Google Cloud Storage / BigQuery
+* CI/CD	Cloud Build + Artifact Registry
+* Infraestrutura	Docker (Flex Templates)
+* Observabilidade	Stackdriver Logging
+* Linguagem	Python 3.9+
+* Modelo de Dados	Medalhão (Bronze, Silver, Gold)
 
-📜 Licença
+---
+
+## 📜 Licença
 Este projeto segue o padrão MIT License (ajustável conforme política da empresa).
 
-👨‍💻 Autor
-Michel Santana — Engenheiro de Dados
+## 👨‍💻 Autor
+> Michel Santana — Engenheiro de Dados
 Projeto desenvolvido como base para uma plataforma analítica unificada de BI hoteleiro, utilizando as melhores práticas de engenharia de dados em GCP.
