@@ -180,19 +180,14 @@ gcloud dataflow flex-template run "bronze-job-$(date +%Y%m%d-%H%M%S)" \
 ---
 ## 🧠 Boas Práticas Adotadas
 * Arquitetura Medalhão (Bronze/Silver/Gold) para controle de qualidade e rastreabilidade.
-
 * Imagens e templates versionados para rollback seguro.
-
 * CI/CD desacoplado por camada, facilitando manutenção e evolução.
-
 * Parâmetros externos (YAML) para controle de ambientes (dev/prod).
-
 * Governança de dados via padronização de schema e logs centralizados.
-
 * Testes unitários e integração contínua antes de cada build.
-
 * Segurança e isolamento usando Service Accounts e Secrets do GCP.
 
+---
 ## 🧾 Tecnologias Principais
 * Categoria	Ferramenta / Serviço
 * Orquestração	Google Dataflow (Apache Beam)
@@ -204,10 +199,10 @@ gcloud dataflow flex-template run "bronze-job-$(date +%Y%m%d-%H%M%S)" \
 * Modelo de Dados	Medalhão (Bronze, Silver, Gold)
 
 ---
-
 ## 📜 Licença
 Este projeto segue o padrão MIT License (ajustável conforme política da empresa).
 
+---
 ## 👨‍💻 Autor
 > Michel Santana — Engenheiro de Dados
 
