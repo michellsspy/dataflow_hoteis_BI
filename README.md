@@ -95,7 +95,7 @@ dataflow-pipelines/
 ├── cloudbuild.bronze.yaml
 ├── cloudbuild.silver.yaml
 └── cloudbuild.gold.yaml
-
+```
 ---
 
 ## 🧩 Descrição das Camadas Medalhão
