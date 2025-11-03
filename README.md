@@ -1,9 +1,9 @@
-```markdown
 # 🏨 Hotel Dataflow BI Platform
 
 **Hotel Dataflow BI Platform** é uma arquitetura moderna de ingestão, processamento e análise de dados para uma **rede hoteleira**, desenvolvida com **Google Cloud Dataflow (Apache Beam - Flex Templates)**.  
 O projeto implementa o **modelo medalhão (Bronze → Silver → Gold)**, garantindo governança, versionamento, escalabilidade e qualidade de dados de ponta a ponta — da ingestão bruta até a camada analítica em BigQuery.
 
+---
 
 ## 🚀 Visão Geral
 
@@ -11,10 +11,9 @@ A plataforma foi desenhada para operar em ambientes **DataOps e CI/CD**, utiliza
 
 Cada camada é empacotada em um **container Docker independente**, contendo seu próprio `Dockerfile`, `metadata.json` e pipelines específicos, seguindo as recomendações oficiais do **Google Cloud para Dataflow Flex Templates**.
 
+---
 
 ## 🧱 Arquitetura do Repositório
-
-```
 
 dataflow-pipelines/
 ├── README.md
@@ -24,80 +23,82 @@ dataflow-pipelines/
 ├── setup.py
 │
 ├── configs/
-│   ├── dev/
-│   │   ├── bronze.yaml
-│   │   ├── silver.yaml
-│   │   ├── gold.yaml
-│   │   └── common.yaml
-│   └── prod/
-│       ├── bronze.yaml
-│       ├── silver.yaml
-│       ├── gold.yaml
-│       └── common.yaml
+│ ├── dev/
+│ │ ├── bronze.yaml
+│ │ ├── silver.yaml
+│ │ ├── gold.yaml
+│ │ └── common.yaml
+│ └── prod/
+│ ├── bronze.yaml
+│ ├── silver.yaml
+│ ├── gold.yaml
+│ └── common.yaml
 │
 ├── src/
-│   ├── **init**.py
-│   ├── common/
-│   │   ├── **init**.py
-│   │   ├── io_utils.py
-│   │   ├── transforms_utils.py
-│   │   ├── schema_utils.py
-│   │   ├── logging_utils.py
-│   │   └── options.py
-│   │
-│   ├── bronze/
-│   │   ├── **init**.py
-│   │   ├── pipeline_bronze.py
-│   │   ├── transforms_bronze.py
-│   │   ├── Dockerfile
-│   │   └── metadata.json
-│   │
-│   ├── silver/
-│   │   ├── **init**.py
-│   │   ├── pipeline_silver.py
-│   │   ├── transforms_silver.py
-│   │   ├── Dockerfile
-│   │   └── metadata.json
-│   │
-│   └── gold/
-│       ├── **init**.py
-│       ├── pipeline_gold.py
-│       ├── transforms_gold.py
-│       ├── Dockerfile
-│       └── metadata.json
+│ ├── init.py
+│ ├── common/
+│ │ ├── init.py
+│ │ ├── io_utils.py
+│ │ ├── transforms_utils.py
+│ │ ├── schema_utils.py
+│ │ ├── logging_utils.py
+│ │ └── options.py
+│ │
+│ ├── bronze/
+│ │ ├── init.py
+│ │ ├── pipeline_bronze.py
+│ │ ├── transforms_bronze.py
+│ │ ├── Dockerfile
+│ │ └── metadata.json
+│ │
+│ ├── silver/
+│ │ ├── init.py
+│ │ ├── pipeline_silver.py
+│ │ ├── transforms_silver.py
+│ │ ├── Dockerfile
+│ │ └── metadata.json
+│ │
+│ └── gold/
+│ ├── init.py
+│ ├── pipeline_gold.py
+│ ├── transforms_gold.py
+│ ├── Dockerfile
+│ └── metadata.json
 │
 ├── templates/
-│   ├── dev/
-│   │   ├── bronze_template.json
-│   │   ├── silver_template.json
-│   │   └── gold_template.json
-│   └── prod/
-│       ├── bronze_template.json
-│       ├── silver_template.json
-│       └── gold_template.json
+│ ├── dev/
+│ │ ├── bronze_template.json
+│ │ ├── silver_template.json
+│ │ └── gold_template.json
+│ └── prod/
+│ ├── bronze_template.json
+│ ├── silver_template.json
+│ └── gold_template.json
 │
 ├── scripts/
-│   ├── build_bronze.sh
-│   ├── build_silver.sh
-│   ├── build_gold.sh
-│   ├── run_bronze_dev.sh
-│   ├── run_silver_dev.sh
-│   └── run_gold_dev.sh
+│ ├── build_bronze.sh
+│ ├── build_silver.sh
+│ ├── build_gold.sh
+│ ├── run_bronze_dev.sh
+│ ├── run_silver_dev.sh
+│ └── run_gold_dev.sh
 │
 ├── tests/
-│   ├── **init**.py
-│   ├── test_transforms_bronze.py
-│   ├── test_transforms_silver.py
-│   ├── test_transforms_gold.py
-│   └── test_utils.py
+│ ├── init.py
+│ ├── test_transforms_bronze.py
+│ ├── test_transforms_silver.py
+│ ├── test_transforms_gold.py
+│ └── test_utils.py
 │
 └── ci/
 ├── cloudbuild.bronze.yaml
 ├── cloudbuild.silver.yaml
 └── cloudbuild.gold.yaml
 
-````
+perl
+Copiar código
 
+---
 
 ## 🧩 Descrição das Camadas Medalhão
 
@@ -107,6 +108,7 @@ dataflow-pipelines/
 | **Silver** | Dados limpos e padronizados | Normaliza schemas, remove duplicidades, aplica regras de negócio e grava no BigQuery (Trusted Zone) | `pipeline_silver.py` lê GCS raw → escreve em BigQuery |
 | **Gold** | Dados analíticos e agregados | KPIs, métricas e modelos dimensionais para BI e dashboards | `pipeline_gold.py` lê tabelas Trusted → cria marts e visões |
 
+---
 
 ## 📂 Estrutura de Arquivos e Funções
 
@@ -139,6 +141,7 @@ dataflow-pipelines/
 | `ci/cloudbuild.*.yaml` | Todas | Pipeline CI/CD no Cloud Build | CI/CD |
 | `templates/dev/*.json` | Todas | Templates gerados no GCS (Flex) | Output |
 
+---
 
 ## ⚙️ CI/CD (Google Cloud Build)
 
@@ -148,18 +151,17 @@ Cada camada possui seu próprio arquivo de build no diretório `ci/`, permitindo
 gcloud builds submit --config ci/cloudbuild.bronze.yaml .
 gcloud builds submit --config ci/cloudbuild.silver.yaml .
 gcloud builds submit --config ci/cloudbuild.gold.yaml .
-````
-
 O pipeline de CI/CD executa:
 
-1. Testes unitários (`pytest`);
-2. Build e push da imagem Docker no Artifact Registry;
-3. Criação do template Flex no bucket GCS correspondente.
+Testes unitários (pytest);
 
+Build e push da imagem Docker no Artifact Registry;
 
-## ☁️ Deploy Manual (sem CI/CD)
+Criação do template Flex no bucket GCS correspondente.
 
-```bash
+☁️ Deploy Manual (sem CI/CD)
+bash
+Copiar código
 gcloud builds submit src/bronze \
   --tag us-central1-docker.pkg.dev/$PROJECT_ID/dataflow/bronze:latest
 
@@ -167,51 +169,42 @@ gcloud dataflow flex-template build gs://$PROJECT_ID-templates/dev/bronze_templa
   --image us-central1-docker.pkg.dev/$PROJECT_ID/dataflow/bronze:latest \
   --sdk-language PYTHON \
   --metadata-file src/bronze/metadata.json
-```
-
 Execução:
 
-```bash
+bash
+Copiar código
 gcloud dataflow flex-template run "bronze-job-$(date +%Y%m%d-%H%M%S)" \
   --template-file-gcs-location gs://$PROJECT_ID-templates/dev/bronze_template.json \
   --region us-central1 \
   --parameters input_url=gs://$PROJECT_ID-raw/input/*.json,output_path=gs://$PROJECT_ID-raw/bronze/out/
-```
+🧠 Boas Práticas Adotadas
+Arquitetura Medalhão (Bronze/Silver/Gold) para controle de qualidade e rastreabilidade.
 
+Imagens e templates versionados para rollback seguro.
 
-## 🧠 Boas Práticas Adotadas
+CI/CD desacoplado por camada, facilitando manutenção e evolução.
 
-* **Arquitetura Medalhão** (Bronze/Silver/Gold) para controle de qualidade e rastreabilidade.
-* **Imagens e templates versionados** para rollback seguro.
-* **CI/CD desacoplado por camada**, facilitando manutenção e evolução.
-* **Parâmetros externos (YAML)** para controle de ambientes (dev/prod).
-* **Governança de dados** via padronização de schema e logs centralizados.
-* **Testes unitários e integração contínua** antes de cada build.
-* **Segurança e isolamento** usando Service Accounts e Secrets do GCP.
+Parâmetros externos (YAML) para controle de ambientes (dev/prod).
 
+Governança de dados via padronização de schema e logs centralizados.
 
-## 🧾 Tecnologias Principais
+Testes unitários e integração contínua antes de cada build.
 
-| Categoria       | Ferramenta / Serviço            |
-| --------------- | ------------------------------- |
-| Orquestração    | Google Dataflow (Apache Beam)   |
-| Armazenamento   | Google Cloud Storage / BigQuery |
-| CI/CD           | Cloud Build + Artifact Registry |
-| Infraestrutura  | Docker (Flex Templates)         |
-| Observabilidade | Stackdriver Logging             |
-| Linguagem       | Python 3.9+                     |
-| Modelo de Dados | Medalhão (Bronze, Silver, Gold) |
+Segurança e isolamento usando Service Accounts e Secrets do GCP.
 
+🧾 Tecnologias Principais
+Categoria	Ferramenta / Serviço
+Orquestração	Google Dataflow (Apache Beam)
+Armazenamento	Google Cloud Storage / BigQuery
+CI/CD	Cloud Build + Artifact Registry
+Infraestrutura	Docker (Flex Templates)
+Observabilidade	Stackdriver Logging
+Linguagem	Python 3.9+
+Modelo de Dados	Medalhão (Bronze, Silver, Gold)
 
-## 📜 Licença
+📜 Licença
+Este projeto segue o padrão MIT License (ajustável conforme política da empresa).
 
-Este projeto segue o padrão **MIT License** (ajustável conforme política da empresa).
-
-
-## 👨‍💻 Autor
-
-**Michel Santana** — Engenheiro de Dados
-Projeto desenvolvido como base para uma **plataforma analítica unificada** de BI hoteleiro, utilizando as melhores práticas de **engenharia de dados em GCP**.
-
-```
-```
+👨‍💻 Autor
+Michel Santana — Engenheiro de Dados
+Projeto desenvolvido como base para uma plataforma analítica unificada de BI hoteleiro, utilizando as melhores práticas de engenharia de dados em GCP.
