@@ -1,0 +1,40 @@
+{
+  "name": "bronze-gcs-raw-ingest",
+  "description": "Ingestão bruta (APIs/CSV/JSON) para zona RAW no GCS.",
+  "parameters": [
+    {
+      "name": "input_url",
+      "label": "Fonte (URL/GS/PS)",
+      "helpText": "Ex.: https://api..., gs://bucket/path/*.json, projects/..../subscriptions/...",
+      "isOptional": false
+    },
+    {
+      "name": "output_path",
+      "label": "Destino GCS (RAW)",
+      "helpText": "Ex.: gs://<bucket-raw>/bronze/dataset/tabela/partitions/",
+      "isOptional": false,
+      "regexes": [ "^gs://.+" ]
+    },
+    {
+      "name": "staging_location",
+      "label": "Staging GCS",
+      "helpText": "gs://<bucket-staging>/dataflow/staging",
+      "isOptional": false,
+      "regexes": [ "^gs://.+" ]
+    },
+    {
+      "name": "temp_location",
+      "label": "Temp GCS",
+      "helpText": "gs://<bucket-temp>/dataflow/tmp",
+      "isOptional": false,
+      "regexes": [ "^gs://.+" ]
+    },
+    {
+      "name": "region",
+      "label": "Região Dataflow",
+      "helpText": "Ex.: us-central1, southamerica-east1",
+      "isOptional": true,
+      "defaultValue": "us-central1"
+    }
+  ]
+}
