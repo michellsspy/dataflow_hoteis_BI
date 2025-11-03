@@ -192,7 +192,6 @@ Governança de dados via padronização de schema e logs centralizados.
 Testes unitários e integração contínua antes de cada build.
 
 Segurança e isolamento usando Service Accounts e Secrets do GCP.
----
 
 ## 🧾 Tecnologias Principais
 * Categoria	Ferramenta / Serviço
