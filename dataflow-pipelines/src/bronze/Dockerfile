@@ -5,9 +5,9 @@ WORKDIR ${WORKDIR}
 
 # Se usar requirements únicos por camada, copie da camada:
 # (ou use um requirements único na raiz, se preferir)
-COPY dataflow-pipelines/src/bronze/requirements.txt ${WORKDIR}/requirements.txt
-COPY dataflow-pipelines/src/bronze/setup.py ${WORKDIR}/setup.py
-COPY dataflow-pipelines/src ${WORKDIR}/src
+COPY src/bronze/requirements.txt ${WORKDIR}/requirements.txt
+COPY src/bronze/setup.py ${WORKDIR}/setup.py
+COPY src ${WORKDIR}/src
 
 ENV FLEX_TEMPLATE_PYTHON_REQUIREMENTS_FILE="${WORKDIR}/requirements.txt"
 ENV FLEX_TEMPLATE_PYTHON_SETUP_FILE="${WORKDIR}/setup.py"
