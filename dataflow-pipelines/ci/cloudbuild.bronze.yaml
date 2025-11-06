@@ -4,7 +4,7 @@
 # Defina estas variáveis no seu ambiente ou no acionador do Cloud Build.
 # _PROJECT_ID: ID do seu projeto GCP.
 # _GCS_TEMPLATE_BUCKET: Nome do seu bucket de templates (ex: bk-etl-hotelaria).
-# _LOCATION: Região onde o Dataflow será executado (ex: southamerica-east1).
+# _LOCATION: Região onde o Dataflow será executado (ex: us-central1).
 # _TAG_NAME: Versão ou hash do commit (ex: latest ou $COMMIT_SHA).
 
 steps:

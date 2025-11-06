@@ -4,7 +4,7 @@
 # Variáveis que o Gatilho do Cloud Build irá substituir:
 # _PROJECT_ID: etl-hoteis
 # _GCS_TEMPLATE_BUCKET: bk-etl-hotelaria
-# _LOCATION: southamerica-east1
+# _LOCATION: us-central1
 # _TAG_NAME: $_COMMIT_SHA
 steps:
 # ----------------------------------------------------------------------
