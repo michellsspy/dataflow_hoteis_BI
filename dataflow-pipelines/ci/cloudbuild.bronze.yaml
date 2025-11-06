@@ -12,14 +12,14 @@ steps:
 # PASSO 1: Configuração e Testes
 # ----------------------------------------------------------------------
 - id: 'Instalar Dependências e Rodar Testes'
-  name: 'python' # Usamos uma imagem Python para instalar dependências e rodar testes
+  name: 'python:3.9' # Usamos uma imagem Python para instalar dependências e rodar testes
   entrypoint: bash
   args:
     - -c
     - |
       echo "Instalando dependências..."
       pip install -r requirements.txt
-      pip install -e setup.py # Instala o projeto localmente via setup.py
+      pip install -e . # Instala o projeto localmente via setup.py
       
       echo "Rodando Testes da Camada Bronze..."
       # O pytest é comumente usado. Assumindo que você o incluiu no requirements.txt
