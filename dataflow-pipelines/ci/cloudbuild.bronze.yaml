@@ -1,29 +1,20 @@
 steps:
-  - name: 'python:3.9'
-    dir: '.'
-    entrypoint: bash
-    args: ['-c', 'pip install -r requirements.txt && pytest -q']
-
   - name: 'gcr.io/cloud-builders/docker'
-    dir: 'src/bronze'
     args: [
-      'build', '-t',
-      '${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/bronze:${_TAG}', '.'
+      'build',
+      '-f', '${_DOCKERFILE}',
+      '-t', '${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/${_LAYER}:${_TAG}',
+      '.'
     ]
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', '${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/${_LAYER}:${_TAG}']
 
-  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
-    entrypoint: bash
-    args:
-      - -c
-      - >
-        gcloud dataflow flex-template build gs://$PROJECT_ID-templates/${_ENV}/bronze_template.json
-        --image ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/bronze:${_TAG}
-        --sdk-language PYTHON
-        --metadata-file src/bronze/metadata.json
 substitutions:
   _REGION: 'us-central1'
-  _ENV: 'dev'
   _REPO: 'dataflow'
+  _LAYER: 'bronze'
   _TAG: 'latest'
+  _DOCKERFILE: 'Dockerfile.bronze'
+
 images:
-  - '${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/bronze:${_TAG}'
+  - '${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/${_LAYER}:${_TAG}'

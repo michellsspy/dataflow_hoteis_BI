@@ -1,40 +1,62 @@
 {
-  "name": "bronze-gcs-raw-ingest",
-  "description": "Ingestão bruta (APIs/CSV/JSON) para zona RAW no GCS.",
+  "name": "bronze-raw-ingestion",
+  "description": "Pipeline Bronze para ingestão de dados CSV da camada transient para o BigQuery (raw_hotelaria).",
   "parameters": [
     {
-      "name": "input_url",
-      "label": "Fonte (URL/GS/PS)",
-      "helpText": "Ex.: https://api..., gs://bucket/path/*.json, projects/..../subscriptions/...",
-      "isOptional": false
-    },
-    {
-      "name": "output_path",
-      "label": "Destino GCS (RAW)",
-      "helpText": "Ex.: gs://<bucket-raw>/bronze/dataset/tabela/partitions/",
-      "isOptional": false,
-      "regexes": [ "^gs://.+" ]
-    },
-    {
-      "name": "staging_location",
-      "label": "Staging GCS",
-      "helpText": "gs://<bucket-staging>/dataflow/staging",
-      "isOptional": false,
-      "regexes": [ "^gs://.+" ]
-    },
-    {
-      "name": "temp_location",
-      "label": "Temp GCS",
-      "helpText": "gs://<bucket-temp>/dataflow/tmp",
-      "isOptional": false,
-      "regexes": [ "^gs://.+" ]
+      "name": "project",
+      "label": "GCP Project ID",
+      "helpText": "Identificador do projeto GCP que executará o job do Dataflow."
     },
     {
       "name": "region",
-      "label": "Região Dataflow",
-      "helpText": "Ex.: us-central1, southamerica-east1",
-      "isOptional": true,
-      "defaultValue": "us-central1"
+      "label": "Região GCP",
+      "helpText": "Região onde o job Dataflow será executado (ex: us-central1)."
+    },
+    {
+      "name": "temp_location",
+      "label": "Caminho temporário (GCS)",
+      "helpText": "Local no bucket GCS usado para arquivos temporários do Dataflow."
+    },
+    {
+      "name": "staging_location",
+      "label": "Caminho de staging (GCS)",
+      "helpText": "Local no bucket GCS usado para staging de arquivos durante o build e execução."
+    },
+    {
+      "name": "bucket_transient",
+      "label": "Bucket Transient",
+      "helpText": "Nome do bucket GCS contendo os arquivos CSV a serem ingeridos (camada transient)."
+    },
+    {
+      "name": "dataset_raw",
+      "label": "Dataset destino (BigQuery)",
+      "helpText": "Nome do dataset BigQuery onde os dados processados serão gravados."
+    },
+    {
+      "name": "tables",
+      "label": "Tabelas fonte",
+      "helpText": "Lista separada por vírgulas com os nomes das tabelas a serem ingeridas (ex: source_faturas,source_hoteis)."
+    },
+    {
+      "name": "delimiter",
+      "label": "Delimitador CSV",
+      "helpText": "Símbolo usado como delimitador dos campos nos arquivos CSV (ex: ',').",
+      "defaultValue": ",",
+      "isOptional": true
+    },
+    {
+      "name": "encoding",
+      "label": "Codificação",
+      "helpText": "Tipo de codificação dos arquivos CSV (ex: utf-8, iso-8859-1).",
+      "defaultValue": "utf-8",
+      "isOptional": true
+    },
+    {
+      "name": "skip_header_lines",
+      "label": "Linhas de cabeçalho a ignorar",
+      "helpText": "Número de linhas de cabeçalho a pular nos arquivos CSV (geralmente 1).",
+      "defaultValue": "1",
+      "isOptional": true
     }
   ]
 }
