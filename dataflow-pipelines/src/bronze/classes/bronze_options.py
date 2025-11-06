@@ -1,13 +1,15 @@
-# src/bronze/classes/bronze_options.py
-
-from apache_beam.options.pipeline_options import PipelineOptions
-from datetime import datetime
+from apache_beam.options.pipeline_options import PipelineOptions, SetupOptions
+import argparse # Importação recomendada para melhor tipagem
 
 class BronzePipelineOptions(PipelineOptions):
     """Opções personalizadas para o pipeline da Camada Bronze (bronze)."""
+    
     @classmethod
-    def _add_argparse_args(cls, parser):
-        # Parâmetros específicos da pipeline
+    def _add_argparse_args(cls, parser: argparse.ArgumentParser):
+        # ----------------------------------------------------
+        # 1. Parâmetros Específicos do Pipeline (Business Logic)
+        # OBRIGATÓRIOS para a pipeline funcionar e tipicamente passados via Template
+        # ----------------------------------------------------
         parser.add_argument(
             '--dataset_id',
             required=True,
@@ -25,26 +27,29 @@ class BronzePipelineOptions(PipelineOptions):
             help='Prefixo para busca de arquivos transient (ex: transient/).'
         )
 
-# Para usar as opções padrão que você listou:
-def get_default_options(job_name_suffix: str) -> dict:
-    """Retorna um dicionário com opções de execução padrão."""
-    data_now = datetime.now().strftime("%Y%m%d%H%M")
-    
-    return {
-        'project': 'etl-hoteis',
-        'runner': 'DataflowRunner',
-        'streaming': False,
-        'job_name': f"etl-bronze-bronze-{job_name_suffix}-{data_now}",
-        'temp_location': 'gs://bk-etl-hotelaria/temp',
-        'staging_location': 'gs://bk-etl-hotelaria/staging',
-        # Opções de Flex Template
-        'template_location': f'gs://bk-etl-hotelaria/templates/template-etl-bronze.json',
-        'autoscaling_algorithm': 'THROUGHPUT_BASED',
-        'worker_machine_type': 'n1-standard-4',
-        'max_num_workers': 3,
-        'region': 'us-central1', # Mantenha a região que você usa para o GCR/Dataflow
-        'save_main_session': False,
-        'sdk_location': 'container',
-        # Configurações de CI/CD (usadas pelo gcloud flex-template build, mas listadas aqui)
-        'service_account_email': 'etl-hoteis@etl-hoteis.iam.gserviceaccount.com' 
-    }
+        # ----------------------------------------------------
+        # 2. Defaults de Infraestrutura do Dataflow (Para rodar localmente ou fixar defaults)
+        # O Dataflow flex template exige que esses sejam passados na CLI.
+        # Aqui definimos defaults para rodar o script diretamente
+        # ----------------------------------------------------
+        parser.add_argument(
+            '--project',
+            default='etl-hoteis',
+            help='ID do Projeto GCP.'
+        )
+        parser.add_argument(
+            '--region',
+            default='us-central1',
+            help='Região do Dataflow.'
+        )
+        parser.add_argument(
+            '--worker_machine_type',
+            default='n1-standard-4',
+            help='Tipo de máquina dos workers.'
+        )
+        parser.add_argument(
+            '--max_num_workers',
+            default=3,
+            type=int,
+            help='Máximo de workers.'
+        )

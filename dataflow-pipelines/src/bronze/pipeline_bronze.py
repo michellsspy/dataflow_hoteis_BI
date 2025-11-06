@@ -1,8 +1,7 @@
-# src/bronze/pipeline_bronze.py
-
 import apache_beam as beam
 from apache_beam.options.pipeline_options import PipelineOptions
-from .classes.bronze_options import get_default_options
+# Mude a importação para a classe PipelineOptions, não a função de dicionário
+from .classes.bronze_options import BronzePipelineOptions 
 from .classes.transforms_bq import GetFolderNames, GcsCsvToBqUpsert
 from .functions.utils import setup_logging
 from .schemas.bronze_schemas import SCHEMA_MAP, PK_COLS_bronze
@@ -15,33 +14,40 @@ def run_pipeline(argv=None):
     """Ponto de entrada principal para o pipeline da camada Bronze (bronze)."""
     
     # 1. Configuração de Opções
-    base_options_dict = get_default_options("hotelaria")
+    # O PipelineOptions usa sys.argv por padrão. Ao passar argv=None, ele
+    # lê automaticamente os argumentos da linha de comando (CLI ou Flex Template).
+    # Passamos `options=BronzePipelineOptions(argv)` para que o BEAM
+    # processe TODOS os argumentos da CLI E aplique os defaults da classe.
+    options = BronzePipelineOptions(argv)
     
-    # Adicionar as opções específicas do projeto/dataset
-    custom_options = {
-        'dataset_id': 'bronze_hotelaria',
-        'gcs_bucket_name': 'bk-etl-hotelaria',
-        'gcs_transient_prefix': 'transient/'
-    }
+    # Configurações dinâmicas (que não podem ser setadas via argparse simples)
+    data_now = datetime.now().strftime("%Y%m%d%H%M")
+    options.view_as(PipelineOptions).job_name = f"etl-bronze-bronze-hotelaria-{data_now}"
+    
+    # Configurações Fixas de Infraestrutura/Runner (se não quiser que venham da CLI)
+    options.view_as(PipelineOptions).runner = 'DataflowRunner'
+    options.view_as(PipelineOptions).streaming = False
+    options.view_as(PipelineOptions).temp_location = 'gs://bk-etl-hotelaria/temp'
+    options.view_as(PipelineOptions).staging_location = 'gs://bk-etl-hotelaria/staging'
+    options.view_as(PipelineOptions).template_location = 'gs://bk-etl-hotelaria/templates/template-etl-bronze.json'
 
-    # Combina opções e cria o objeto PipelineOptions
-    options_flags = sys.argv[1:] if sys.argv[1:] else []
-    all_options = {**base_options_dict, **custom_options}
-    options = PipelineOptions(flags=options_flags, **all_options)
+    # Se a Service Account for sempre a mesma:
+    options.view_as(PipelineOptions).service_account_email = 'etl-hoteis@etl-hoteis.iam.gserviceaccount.com'
+
+    # Acessa as opções customizadas de forma CORRETA
+    bronze_options = options.view_as(BronzePipelineOptions)
     
     logger.info("Iniciando pipeline Bronze (GCS Transient -> BQ bronze Upsert)")
 
     # 2. Inicia a Pipeline
     with beam.Pipeline(options=options) as p:
-        # Acessa as opções customizadas
-        bronze_options = options.view_as(type('CustomOptions', (object,), custom_options))
-
-        # 3. Lista as pastas no GCS (Um PCollection de nomes de tabelas: 'source_consumos')
+        # 3. Lista as pastas no GCS
         folder_names = (
             p
             | "Start PCollection" >> beam.Create([None])
             | "Listar Pastas no GCS" >> beam.ParDo(
                 GetFolderNames(
+                    # Acessando as propriedades diretamente do objeto bronze_options
                     bucket_name=bronze_options.gcs_bucket_name,
                     prefix_to_search=bronze_options.gcs_transient_prefix
                 )
@@ -53,7 +59,8 @@ def run_pipeline(argv=None):
             folder_names
             | "Executar GCS-BQ Upsert" >> beam.ParDo(
                 GcsCsvToBqUpsert(
-                    projeto=bronze_options.project,
+                    # Acessando as propriedades diretamente do objeto bronze_options
+                    projeto=bronze_options.project, # 'project' veio da classe BaseOptions
                     dataset_id=bronze_options.dataset_id,
                     bucket_name=bronze_options.gcs_bucket_name,
                     gcs_prefix=bronze_options.gcs_transient_prefix,
@@ -78,5 +85,4 @@ def run_pipeline(argv=None):
         )
 
 if __name__ == '__main__':
-    # O Dataflow Flex Template chama esta função
     run_pipeline()
