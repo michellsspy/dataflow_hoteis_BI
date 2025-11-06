@@ -4,7 +4,7 @@ from google.cloud.bigquery import SchemaField
 Este módulo centraliza a definição de todos os esquemas de tabela do BigQuery
 usados nos pipelines de dados.
 
-- Esquemas RAW: Refletem a estrutura dos arquivos CSV de origem, incluindo
+- Esquemas BRONZE: Refletem a estrutura dos arquivos CSV de origem, incluindo
   as colunas de auditoria 'insert_date' e 'update_date' que o pipeline
   de UPSERT irá popular.
   
@@ -12,10 +12,10 @@ usados nos pipelines de dados.
 - Esquemas REFINED: Refletem as tabelas agregadas, prontas para BI.
 """
 
-# --- Camada RAW ---
+# --- Camada BRONZE ---
 # Esquemas explícitos para as tabelas de origem.
 
-SCHEMA_RAW_CONSUMOS = [
+SCHEMA_BRONZE_CONSUMOS = [
     SchemaField("consumo_id", "INTEGER", "NULLABLE"),
     SchemaField("reserva_id", "INTEGER", "NULLABLE"),
     SchemaField("hospede_id", "INTEGER", "NULLABLE"),
@@ -31,7 +31,7 @@ SCHEMA_RAW_CONSUMOS = [
     SchemaField("update_date", "DATETIME", "NULLABLE"),
 ]
 
-SCHEMA_RAW_FATURAS = [
+SCHEMA_BRONZE_FATURAS = [
     SchemaField("fatura_id", "INTEGER", "NULLABLE"),
     SchemaField("reserva_id", "INTEGER", "NULLABLE"),
     SchemaField("hospede_id", "INTEGER", "NULLABLE"),
@@ -53,7 +53,7 @@ SCHEMA_RAW_FATURAS = [
     SchemaField("update_date", "DATETIME", "NULLABLE"),
 ]
 
-SCHEMA_RAW_HOSPEDES = [
+SCHEMA_BRONZE_HOSPEDES = [
     SchemaField("hospede_id", "INTEGER", "NULLABLE"),
     SchemaField("nome_completo", "STRING", "NULLABLE"),
     SchemaField("cpf", "STRING", "NULLABLE"),
@@ -77,7 +77,7 @@ SCHEMA_RAW_HOSPEDES = [
     SchemaField("update_date", "DATETIME", "NULLABLE"),
 ]
 
-SCHEMA_RAW_HOTEIS = [
+SCHEMA_BRONZE_HOTEIS = [
     SchemaField("hotel_id", "INTEGER", "NULLABLE"),
     SchemaField("nome_hotel", "STRING", "NULLABLE"),
     SchemaField("endereco", "STRING", "NULLABLE"),
@@ -105,7 +105,7 @@ SCHEMA_RAW_HOTEIS = [
     SchemaField("update_date", "DATETIME", "NULLABLE"),
 ]
 
-SCHEMA_RAW_QUARTOS = [
+SCHEMA_BRONZE_QUARTOS = [
     SchemaField("quarto_id", "INTEGER", "NULLABLE"),
     SchemaField("hotel_id", "INTEGER", "NULLABLE"),
     SchemaField("numero_quarto", "INTEGER", "NULLABLE"),
@@ -126,7 +126,7 @@ SCHEMA_RAW_QUARTOS = [
     SchemaField("update_date", "DATETIME", "NULLABLE"),
 ]
 
-SCHEMA_RAW_RESERVAS = [
+SCHEMA_BRONZE_RESERVAS = [
     SchemaField("reserva_id", "INTEGER", "NULLABLE"),
     SchemaField("hospede_id", "INTEGER", "NULLABLE"),
     SchemaField("quarto_id", "INTEGER", "NULLABLE"),
@@ -152,7 +152,7 @@ SCHEMA_RAW_RESERVAS = [
     SchemaField("update_date", "DATETIME", "NULLABLE"),
 ]
 
-SCHEMA_RAW_RESERVAS_OTA = [
+SCHEMA_BRONZE_RESERVAS_OTA = [
     SchemaField("ota_reserva_id", "INTEGER", "NULLABLE"),
     SchemaField("reserva_id", "INTEGER", "NULLABLE"),
     SchemaField("ota_codigo_confirmacao", "STRING", "NULLABLE"),

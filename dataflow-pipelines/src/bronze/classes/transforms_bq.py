@@ -57,7 +57,7 @@ class GetFolderNames(beam.DoFn):
 class GcsCsvToBqUpsert(beam.DoFn):
     """
     Executa o LOAD do CSV (GCS) para uma tabela TEMP (Staging) e o MERGE 
-    condicional subsequente para a tabela final (RAW) no BigQuery.
+    condicional subsequente para a tabela final (bronze) no BigQuery.
     """
     TAG_FAILED = 'failed'
     TAG_SUCCESS = 'success'
@@ -89,12 +89,12 @@ class GcsCsvToBqUpsert(beam.DoFn):
             blob_path = f"{self.gcs_prefix.strip('/')}/{folder_name}/{folder_name}.csv"
             gcs_uri = f"gs://{self.bucket_name}/{blob_path}"
             
-            # Nome da Tabela BQ de destino (Ex: raw_consumos)
-            table_name = folder_name.replace('source_', 'raw_')
+            # Nome da Tabela BQ de destino (Ex: bronze_consumos)
+            table_name = folder_name.replace('source_', 'bronze_')
             table_id = f"{self.projeto}.{self.dataset_id}.{table_name}"
             
             # Nome da Tabela TEMP (Ex: _staging_consumos_2024...)
-            temp_table_name = f"_staging_{table_name.replace('raw_', '')}_{timestamp_suffix}"
+            temp_table_name = f"_staging_{table_name.replace('bronze_', '')}_{timestamp_suffix}"
             temp_table_id = f"{self.projeto}.{self.dataset_id}.{temp_table_name}"
             
             logger.info(f"[{table_name}] Iniciando UPSERT para: {table_id} (via staging: {temp_table_id})")
@@ -124,7 +124,7 @@ class GcsCsvToBqUpsert(beam.DoFn):
             job_load.result()
             logger.info(f"[{table_name}] Carga para staging concluída: {temp_table_id}")
 
-            # 4. Garante que a Tabela Final (RAW) exista
+            # 4. Garante que a Tabela Final (bronze) exista
             try:
                 self.bq_client.get_table(table_id)
             except NotFound:

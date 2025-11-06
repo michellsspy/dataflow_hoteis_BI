@@ -4,14 +4,14 @@ from apache_beam.options.pipeline_options import PipelineOptions
 from datetime import datetime
 
 class BronzePipelineOptions(PipelineOptions):
-    """Opções personalizadas para o pipeline da Camada Bronze (RAW)."""
+    """Opções personalizadas para o pipeline da Camada Bronze (bronze)."""
     @classmethod
     def _add_argparse_args(cls, parser):
         # Parâmetros específicos da pipeline
         parser.add_argument(
             '--dataset_id',
             required=True,
-            help='BigQuery dataset de destino (ex: raw_hotelaria).'
+            help='BigQuery dataset de destino (ex: bronze_hotelaria).'
         )
         parser.add_argument(
             '--gcs_bucket_name',
@@ -34,7 +34,7 @@ def get_default_options(job_name_suffix: str) -> dict:
         'project': 'etl-hoteis',
         'runner': 'DataflowRunner',
         'streaming': False,
-        'job_name': f"etl-bronze-raw-{job_name_suffix}-{data_now}",
+        'job_name': f"etl-bronze-bronze-{job_name_suffix}-{data_now}",
         'temp_location': 'gs://bk-etl-hotelaria/temp',
         'staging_location': 'gs://bk-etl-hotelaria/staging',
         # Opções de Flex Template

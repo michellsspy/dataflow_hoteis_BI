@@ -1,4 +1,0 @@
-apache-beam[gcp]==2.56.0
-google-cloud-bigquery
-google-cloud-storage
-pytest

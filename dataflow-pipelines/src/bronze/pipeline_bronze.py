@@ -5,21 +5,21 @@ from apache_beam.options.pipeline_options import PipelineOptions
 from .classes.bronze_options import get_default_options
 from .classes.transforms_bq import GetFolderNames, GcsCsvToBqUpsert
 from .functions.utils import setup_logging
-from .schemas.raw_schemas import SCHEMA_MAP, PK_COLS_RAW
+from .schemas.bronze_schemas import SCHEMA_MAP, PK_COLS_bronze
 from datetime import datetime
 import sys
 
 logger = setup_logging()
 
 def run_pipeline(argv=None):
-    """Ponto de entrada principal para o pipeline da camada Bronze (RAW)."""
+    """Ponto de entrada principal para o pipeline da camada Bronze (bronze)."""
     
     # 1. Configuração de Opções
     base_options_dict = get_default_options("hotelaria")
     
     # Adicionar as opções específicas do projeto/dataset
     custom_options = {
-        'dataset_id': 'raw_hotelaria',
+        'dataset_id': 'bronze_hotelaria',
         'gcs_bucket_name': 'bk-etl-hotelaria',
         'gcs_transient_prefix': 'transient/'
     }
@@ -29,7 +29,7 @@ def run_pipeline(argv=None):
     all_options = {**base_options_dict, **custom_options}
     options = PipelineOptions(flags=options_flags, **all_options)
     
-    logger.info("Iniciando pipeline Bronze (GCS Transient -> BQ Raw Upsert)")
+    logger.info("Iniciando pipeline Bronze (GCS Transient -> BQ bronze Upsert)")
 
     # 2. Inicia a Pipeline
     with beam.Pipeline(options=options) as p:
@@ -58,7 +58,7 @@ def run_pipeline(argv=None):
                     bucket_name=bronze_options.gcs_bucket_name,
                     gcs_prefix=bronze_options.gcs_transient_prefix,
                     schema_map=SCHEMA_MAP,
-                    pk_map=PK_COLS_RAW
+                    pk_map=PK_COLS_bronze
                 )
             ).with_outputs(
                 GcsCsvToBqUpsert.TAG_FAILED,
