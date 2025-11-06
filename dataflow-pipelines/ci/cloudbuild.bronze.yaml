@@ -35,7 +35,7 @@ steps:
   args:
     - 'build'
     - '-t'
-    - 'gcr.io/${_PROJECT_ID}/dataflow/bronze-hotelaria:${_TAG_NAME}'
+    - 'gcr.io/${_PROJECT_ID}/dataflow/bronze-hotelaria:$COMMIT_SHA'
     - '.' # O Dockerfile está em src/bronze/
   dir: 'dataflow-pipelines'
 
@@ -46,7 +46,7 @@ steps:
   name: 'gcr.io/cloud-builders/docker'
   args:
     - 'push'
-    - 'gcr.io/${_PROJECT_ID}/dataflow/bronze-hotelaria:${_TAG_NAME}'
+    - 'gcr.io/${_PROJECT_ID}/dataflow/bronze-hotelaria:$COMMIT_SHA'
   dir: 'dataflow-pipelines'
 
 # ----------------------------------------------------------------------
@@ -59,7 +59,7 @@ steps:
     - -c
     - |
       gcloud dataflow flex-template build gs://${_GCS_TEMPLATE_BUCKET}/templates/bronze-hotelaria.json \
-        --image 'gcr.io/${_PROJECT_ID}/dataflow/bronze-hotelaria:${_TAG_NAME}' \
+        --image 'gcr.io/${_PROJECT_ID}/dataflow/bronze-hotelaria:$COMMIT_SHA' \
         --sdk-language 'PYTHON' \
         --metadata-file 'src/bronze/metadata.json' \
         --region '${_LOCATION}'
@@ -69,7 +69,7 @@ steps:
 # SAÍDA (Opcional)
 # ----------------------------------------------------------------------
 images:
-  - 'gcr.io/${_PROJECT_ID}/dataflow/bronze-hotelaria:${_TAG_NAME}'
+  - 'gcr.io/${_PROJECT_ID}/dataflow/bronze-hotelaria:$COMMIT_SHA'
 
 # ----------------------------------------------------------------------
 # OPÇÕES DE BUILD: Define o logging para CLOUD_LOGGING_ONLY
