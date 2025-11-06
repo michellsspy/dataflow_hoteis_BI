@@ -1,34 +1,39 @@
-# ci/cloudbuild.bronze.yaml
+# .github/workflows/cloudbuild.bronze.yaml
 
-# Variáveis que serão substituídas na execução (ex: via Github Actions ou gcloud build)
-# Defina estas variáveis no seu ambiente ou no acionador do Cloud Build.
-# _PROJECT_ID: ID do seu projeto GCP.
-# _GCS_TEMPLATE_BUCKET: Nome do seu bucket de templates (ex: bk-etl-hotelaria).
-# _LOCATION: Região onde o Dataflow será executado (ex: us-central1).
-# _TAG_NAME: Versão ou hash do commit (ex: latest ou $COMMIT_SHA).
+# Variáveis que o Gatilho do Cloud Build irá substituir:
+# _PROJECT_ID: etl-hoteis
+# _GCS_TEMPLATE_BUCKET: bk-etl-hotelaria
+# _LOCATION: southamerica-east1
+# COMMIT_SHA (Variável embutida do Cloud Build)
 
 steps:
 # ----------------------------------------------------------------------
-# PASSO 1: Configuração e Testes
+# PASSO 1: Instalação de Dependências e Testes de Unidade
+# Corrigido: Uso do Python 3.10 para melhor compatibilidade do Beam/grpcio.
+# Corrigido: Caminhos dos comandos pip e pytest.
 # ----------------------------------------------------------------------
-- id: 'Instalar Dependências e Rodar Testes'
-  name: 'python:3.9' # Usamos uma imagem Python para instalar dependências e rodar testes
+- id: 'Rodar Testes da Camada Bronze'
+  name: 'python:3.10' # Usando Python 3.10 para evitar erros de compilação do 3.9
   entrypoint: bash
   args:
     - -c
     - |
-      echo "Instalando dependências..."
-      pip install -r requirements.txt
-      pip install -e . # Instala o projeto localmente via setup.py
+      echo "Instalando dependências de build e teste..."
       
-      echo "Rodando Testes da Camada Bronze..."
-      # O pytest é comumente usado. Assumindo que você o incluiu no requirements.txt
-      # Executa os testes unitários do Apache Beam
-      python -m pytest tests/test_transforms_bronze.py
-  dir: 'dataflow-pipelines' # Direciona o comando para a raiz do projeto
+      # 1. Instala dependências (requirements.txt está em src/bronze)
+      pip install -r dataflow-pipelines/src/bronze/requirements.txt
+      
+      # 2. Instala o projeto (o diretório que contém o setup.py)
+      pip install -e dataflow-pipelines/src/bronze
+      
+      echo "Executando testes..."
+      # 3. Executa os testes (caminho completo)
+      python -m pytest dataflow-pipelines/tests/test_transforms_bronze.py
+      
+  dir: '.' # Executa a partir da raiz do repositório, usando os caminhos longos acima.
 
 # ----------------------------------------------------------------------
-# PASSO 2: Build da Imagem Docker
+# PASSO 2: Build da Imagem Docker do Flex Template
 # ----------------------------------------------------------------------
 - id: 'Buildar Imagem Docker'
   name: 'gcr.io/cloud-builders/docker'
@@ -36,18 +41,18 @@ steps:
     - 'build'
     - '-t'
     - 'gcr.io/${_PROJECT_ID}/dataflow/bronze-hotelaria:$COMMIT_SHA'
-    - '.' # O Dockerfile está em src/bronze/
-  dir: 'dataflow-pipelines'
+    - '.' 
+  dir: 'dataflow-pipelines/src/bronze' # Contexto deve ser onde está o Dockerfile
 
 # ----------------------------------------------------------------------
-# PASSO 3: Push da Imagem para o Google Container Registry (GCR)
+# PASSO 3: Push da Imagem para o GCR
 # ----------------------------------------------------------------------
 - id: 'Push da Imagem'
   name: 'gcr.io/cloud-builders/docker'
   args:
     - 'push'
     - 'gcr.io/${_PROJECT_ID}/dataflow/bronze-hotelaria:$COMMIT_SHA'
-  dir: 'dataflow-pipelines'
+  dir: 'dataflow-pipelines/src/bronze'
 
 # ----------------------------------------------------------------------
 # PASSO 4: Criar o Flex Template no GCS
@@ -58,22 +63,14 @@ steps:
   args:
     - -c
     - |
+      echo "Gerando o arquivo JSON do Flex Template..."
       gcloud dataflow flex-template build gs://${_GCS_TEMPLATE_BUCKET}/templates/bronze-hotelaria.json \
         --image 'gcr.io/${_PROJECT_ID}/dataflow/bronze-hotelaria:$COMMIT_SHA' \
         --sdk-language 'PYTHON' \
-        --metadata-file 'src/bronze/metadata.json' \
-        --region '${_LOCATION}'
-  dir: 'dataflow-pipelines'
-
-# ----------------------------------------------------------------------
-# SAÍDA (Opcional)
-# ----------------------------------------------------------------------
-images:
-  - 'gcr.io/${_PROJECT_ID}/dataflow/bronze-hotelaria:$COMMIT_SHA'
-
-# ----------------------------------------------------------------------
-# OPÇÕES DE BUILD: Define o logging para CLOUD_LOGGING_ONLY
-# Resolve o erro 'build.service_account' ao usar SA personalizada.
-# ----------------------------------------------------------------------
+        --metadata-file 'dataflow-pipelines/src/bronze/metadata.json' \
+        --region '${_LOCATION}' \
+        --project '${_PROJECT_ID}'
+  dir: '.'
+  
 options:
   logging: CLOUD_LOGGING_ONLY
