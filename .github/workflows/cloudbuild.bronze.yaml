@@ -41,10 +41,10 @@ steps:
     - 'build'
     - '-t'
     - 'gcr.io/${_PROJECT_ID}/dataflow/bronze-hotelaria:$COMMIT_SHA'
-    - '-f' # <--- NOVA LINHA: Especifica qual Dockerfile usar
-    - 'dataflow-pipelines/src/bronze/Dockerfile' # <--- CAMINHO DO DOCKERFILE
-    - '.' # Contexto de build: a raiz do repositório
-  dir: '.' # Execução na raiz
+    - '-f' 
+    - 'dataflow-pipelines/src/bronze/Dockerfile' 
+    - '.' 
+  dir: '.' 
 
 # ----------------------------------------------------------------------
 # PASSO 3: Push da Imagem para o GCR
