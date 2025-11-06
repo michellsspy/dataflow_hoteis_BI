@@ -73,21 +73,5 @@ steps:
           # A REGIÃO é definida na execução do template, não no build.
     dir: '.'
 
-  # ----------------------------------------------------------------------
-  # Passo 5: Executar o Job Dataflow (Deploy Automático)
-  # ----------------------------------------------------------------------
-  - name: 'gcr.io/cloud-builders/gcloud'
-    id: 'Executar Job Bronze'
-    entrypoint: 'bash'
-    args:
-      [
-        '-c',
-        'gcloud dataflow jobs run etl-bronze-$COMMIT_SHA \
-        --template-file  "gs://bk-etl-hotelaria/templates/bronze-hotelaria.json" \
-        --region "us-east1" \
-        --project "etl-hoteis" \
-        --parameters dataset="bronze_hotelaria",gcs_input_path="gs://bk-etl-hotelaria/transient/source_*/source_*.csv"',
-      ]
-
 options:
   logging: CLOUD_LOGGING_ONLY
