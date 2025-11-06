@@ -38,7 +38,7 @@ steps:
     args:
       - 'build'
       - '-t'
-      - 'gcr.io/${_PROJECT_ID}/dataflow/bronze-hotelaria:$COMMIT_SHA'
+      - 'gcr.io/${_PROJECT_ID}/dataflow/bronze-hotelaria:latest'
       - '-f' 
       - 'dataflow-pipelines/src/bronze/Dockerfile' 
       - 'dataflow-pipelines' 
@@ -51,7 +51,7 @@ steps:
     name: 'gcr.io/cloud-builders/docker'
     args:
       - 'push'
-      - 'gcr.io/${_PROJECT_ID}/dataflow/bronze-hotelaria:$COMMIT_SHA'
+      - 'gcr.io/${_PROJECT_ID}/dataflow/bronze-hotelaria:latest'
     dir: 'dataflow-pipelines/src/bronze'
 
   # ----------------------------------------------------------------------
@@ -66,7 +66,7 @@ steps:
         echo "Gerando o arquivo JSON do Flex Template..."
         # REMOÇÃO DO ARGUMENTO --region que causa o erro de sintaxe
         gcloud dataflow flex-template build gs://${_GCS_TEMPLATE_BUCKET}/templates/bronze-hotelaria.json \
-          --image 'gcr.io/${_PROJECT_ID}/dataflow/bronze-hotelaria:$COMMIT_SHA' \
+          --image 'gcr.io/${_PROJECT_ID}/dataflow/bronze-hotelaria:latest' \
           --sdk-language 'PYTHON' \
           --metadata-file 'dataflow-pipelines/src/bronze/metadata.json' \
           --project '${_PROJECT_ID}'
