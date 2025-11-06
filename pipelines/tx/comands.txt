@@ -1,0 +1,41 @@
+#--->>> Conceder as seguintes permições na conta de serviço
+roles/dataflow.admin
+roles/dataflow.worker
+roles/storage.objectAdmin
+roles/artifactregistry.reader
+
+#--->> Set project
+gcloud auth application-default set-quota-project etl-hoteis
+
+gcloud artifacts repositories create dataflow \
+    --repository-format=docker \
+    --location=us-central1
+
+gcloud auth configure-docker us-central1-docker.pkg.dev
+
+
+#--->>> Sempre que alterar algo, precisa executar os comandos abaixo novamente
+
+gcloud builds submit --tag us-central1-docker.pkg.dev/etl-hoteis/dataflow/bronze-hotelaria:latest .
+
+
+#--->>> Subnet
+https://www.googleapis.com/compute/v1/projects/etl-hoteis/regions/us-central1/subnetworks/vpc-etl-hoteis
+
+
+#--->>> Executar só quando for utilizar o modelo com arquivo json
+
+gcloud dataflow flex-template build gs://dataflow-flex-model/templates//dataflow.json \
+ --image-gcr-path "us-central1-docker.pkg.dev/etl-hoteis/dataflow/etl-hoteis-dev:latest" \
+ --sdk-language "PYTHON" \
+ --flex-template-base-image "PYTHON3" \
+ --metadata-file "metadata.json" \
+ --py-path "." \
+ --env "FLEX_TEMPLATE_PYTHON_PY_FILE=main.py" \
+ --env "FLEX_TEMPLATE_PYTHON_REQUIREMENTS_FILE=requirements.txt"
+
+
+
+gcloud dataflow flex-template build gs://etl-postgres-mss/templates/dataflow.json \
+    --image="us-central1-docker.pkg.dev/etl-hoteis/dataflow/etl-hoteis-dev:latest" \
+    --sdk-language "PYTHON" 

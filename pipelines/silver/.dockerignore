@@ -1,0 +1,11 @@
+.git
+.gitignore
+**/__pycache__/
+**/*.pyc
+tests/
+templates/
+ci/
+scripts/
+docs/
+*.md
+.env
