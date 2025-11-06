@@ -18,14 +18,14 @@ steps:
     - -c
     - |
       echo "Instalando dependências..."
-      pip install -r src/bronze/requirements.txt
-      pip install -e src/bronze/setup.py # Instala o projeto localmente via setup.py
+      pip install -r requirements.txt
+      pip install -e setup.py # Instala o projeto localmente via setup.py
       
       echo "Rodando Testes da Camada Bronze..."
       # O pytest é comumente usado. Assumindo que você o incluiu no requirements.txt
       # Executa os testes unitários do Apache Beam
       python -m pytest tests/test_transforms_bronze.py
-  dir: 'dataflow-pipelines' # Direciona o comando para a raiz do projeto
+  dir: 'dataflow-pipelines/src/bronze' # Direciona o comando para a raiz do projeto
 
 # ----------------------------------------------------------------------
 # PASSO 2: Build da Imagem Docker
