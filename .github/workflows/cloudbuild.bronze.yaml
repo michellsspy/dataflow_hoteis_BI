@@ -42,9 +42,9 @@ steps:
     - '-t'
     - 'gcr.io/${_PROJECT_ID}/dataflow/bronze-hotelaria:$COMMIT_SHA'
     - '-f' 
-    - 'src/bronze/Dockerfile' 
-    - '.' 
-  dir: 'dataflow-pipelines' 
+    - 'dataflow-pipelines/src/bronze/Dockerfile' 
+    - 'dataflow-pipelines' 
+  dir: '.' 
 
 # ----------------------------------------------------------------------
 # PASSO 3: Push da Imagem para o GCR
