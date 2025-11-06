@@ -5,33 +5,38 @@ import apache_beam as beam
 from apache_beam.testing.test_pipeline import TestPipeline
 from apache_beam.testing.util import assert_that, equal_to
 import re
-# Removendo List, Dict, Any, pois vamos evitar a tipagem de entrada da função de asserção
-# from typing import List, Dict, Any 
+import sys
+import os
 
-# Importa as funções e classes do nosso módulo de transformações
-from src.bronze.functions.transforms_bronze import AddAuditColumns, extract_table_name
+# 🎯 CORREÇÃO DE ARQUITETURA E IMPORT:
+# 1. Adiciona a pasta 'src' ao sys.path para o Python reconhecer os pacotes.
+# O diretório atual é 'dataflow-pipelines/tests', então subimos um nível (..),
+# e entramos em 'src'.
+sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'src'))
+
+# 2. O import agora reflete a nova arquitetura (assumindo transforms.py em classes/)
+# Se o arquivo for transforms_bq.py dentro de classes, ajuste o import:
+# NOTE: Você precisa ter certeza de que AddAuditColumns e extract_table_name estão neste novo arquivo!
+from bronze.classes.transforms_bq import AddAuditColumns, extract_table_name 
 
 # Expressão regular para verificar o formato do timestamp ISO
-# O Beam usa o formato ISO: YYYY-MM-DDTHH:MM:SS.mmmmmm
 TIMESTAMP_REGEX = r'\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{6}'
 
-# 🎯 FUNÇÃO DE ASSERÇÃO GLOBAL CORRIGIDA: Entrada sem List[] para evitar TypeCheckError.
+# FUNÇÃO DE ASSERÇÃO GLOBAL: (Corrigida para não usar tipagem complexa)
 def check_audit_columns(actual):
     """
     Função global de asserção para verificar se os registros contêm as colunas
     de auditoria e se os tipos estão corretos.
-    
-    A entrada 'actual' é um Iterable (PCollection), não uma List.
     """
     
-    # Converte o Iterable (elementos da PCollection) para uma lista para contagem e iteração segura.
+    # Converte o Iterable para uma lista para contagem e iteração segura.
     actual_list = list(actual) 
     
     # 1. Verifica se o número de registros está correto
     assert len(actual_list) == 2, f"Esperado 2 registros, encontrado {len(actual_list)}"
     
     for record in actual_list:
-        # 2. Verifica se as colunas originais estão presentes (simples sanity check)
+        # 2. Verifica se as colunas originais estão presentes
         assert 'id_hospede' in record, "Falta a chave 'id_hospede'"
         assert 'cpf' in record, "Falta a chave 'cpf'"
         
@@ -41,20 +46,19 @@ def check_audit_columns(actual):
         assert 'primary_key_bronze' in record, "Falta a coluna 'primary_key_bronze'"
         
         # 4. Verifica o formato do timestamp (essencial)
-        # Usamos o re.match aqui pois o assert_that roda dentro de um ParDo que não serializa unittest.TestCase asserts
         assert re.match(TIMESTAMP_REGEX, record['insert_date']), \
             f"Formato de insert_date inválido: {record['insert_date']}"
         assert re.match(TIMESTAMP_REGEX, record['update_date']), \
             f"Formato de update_date inválido: {record['update_date']}"
             
-        # 5. Verifica se a chave de hash é um tipo inteiro (evita problemas de determinismo)
+        # 5. Verifica se a chave de hash é um tipo inteiro 
         assert isinstance(record['primary_key_bronze'], int), \
             f"primary_key_bronze não é inteiro, é {type(record['primary_key_bronze'])}"
 
 
 class TestBronzeTransforms(unittest.TestCase):
     
-    # --- Testes da Função extract_table_name (OK) ---
+    # --- Testes da Função extract_table_name ---
     
     def test_extract_table_name_consumos(self):
         """Testa a extração do nome da tabela para consumos."""
