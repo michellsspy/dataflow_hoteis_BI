@@ -30,7 +30,7 @@ steps:
       # 3. Executa os testes (caminho completo)
       python -m pytest dataflow-pipelines/tests/test_transforms_bronze.py
       
-  dir: '.' # Executa a partir da raiz do repositório, usando os caminhos longos acima.
+  dir: 'dataflow-pipelines' # Executa a partir da raiz do repositório, usando os caminhos longos acima.
 
 # ----------------------------------------------------------------------
 # PASSO 2: Build da Imagem Docker do Flex Template
@@ -44,7 +44,7 @@ steps:
     - '-f' 
     - 'dataflow-pipelines/src/bronze/Dockerfile' 
     - '.' 
-  dir: '.' 
+  dir: 'dataflow-pipelines' 
 
 # ----------------------------------------------------------------------
 # PASSO 3: Push da Imagem para o GCR
