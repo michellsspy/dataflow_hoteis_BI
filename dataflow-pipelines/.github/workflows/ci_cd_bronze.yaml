@@ -6,7 +6,6 @@
 # _GCS_TEMPLATE_BUCKET: bk-etl-hotelaria
 # _LOCATION: southamerica-east1
 # _TAG_NAME: $_COMMIT_SHA
-
 steps:
 # ----------------------------------------------------------------------
 # PASSO 1: Instalação de Dependências e Testes de Unidade
