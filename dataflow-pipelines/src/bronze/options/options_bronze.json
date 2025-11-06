@@ -1,0 +1,8 @@
+{
+    "dataset": "raw_hotelaria",
+    "gcs_input_path": "gs://bk-etl-hotelaria/transient/source_*/source_*.csv",
+    "project": "etl-hoteis",
+    "staging_location": "gs://bk-etl-hotelaria/staging",
+    "temp_location": "gs://bk-etl-hotelaria/temp",
+    "runner": "DataflowRunner"
+}

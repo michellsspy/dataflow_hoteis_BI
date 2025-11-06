@@ -1,43 +1,47 @@
 # ci/cloudbuild.bronze.yaml
+# Este arquivo é executado pelo Google Cloud Build quando um push para 'main' é detectado.
 
-# Variáveis que serão substituídas na execução (ex: via Github Actions ou gcloud build)
-# Defina estas variáveis no seu ambiente ou no acionador do Cloud Build.
-# _PROJECT_ID: ID do seu projeto GCP.
-# _GCS_TEMPLATE_BUCKET: Nome do seu bucket de templates (ex: bk-etl-hotelaria).
-# _LOCATION: Região onde o Dataflow será executado (ex: southamerica-east1).
-# _TAG_NAME: Versão ou hash do commit (ex: latest ou $COMMIT_SHA).
+# Variáveis que o Gatilho do Cloud Build irá substituir:
+# _PROJECT_ID: etl-hoteis
+# _GCS_TEMPLATE_BUCKET: bk-etl-hotelaria
+# _LOCATION: southamerica-east1
+# _TAG_NAME: $_COMMIT_SHA
 
 steps:
 # ----------------------------------------------------------------------
-# PASSO 1: Configuração e Testes
+# PASSO 1: Instalação de Dependências e Testes de Unidade
+# O Cloud Build usa o contexto (dataflow-pipelines).
 # ----------------------------------------------------------------------
-- id: 'Instalar Dependências e Rodar Testes'
-  name: 'python' # Usamos uma imagem Python para instalar dependências e rodar testes
+- id: 'Rodar Testes da Camada Bronze'
+  name: 'python'
   entrypoint: bash
   args:
     - -c
     - |
-      echo "Instalando dependências..."
+      echo "Instalando dependências de build e teste..."
+      # Instala dependências do requirements.txt (para rodar o código e os testes)
       pip install -r src/bronze/requirements.txt
-      pip install -e . # Instala o projeto localmente via setup.py
+      # Instala o projeto como um pacote editável para que os imports funcionem
+      pip install -e . 
       
-      echo "Rodando Testes da Camada Bronze..."
-      # O pytest é comumente usado. Assumindo que você o incluiu no requirements.txt
-      # Executa os testes unitários do Apache Beam
+      echo "Executando testes..."
+      # Executa os testes unitários. Falhar aqui interrompe o build.
       python -m pytest tests/test_transforms_bronze.py
-  dir: 'dataflow-pipelines' # Direciona o comando para a raiz do projeto
+  # O contexto é a pasta raiz do projeto que o Gatilho envia
+  dir: '.' 
 
 # ----------------------------------------------------------------------
-# PASSO 2: Build da Imagem Docker
+# PASSO 2: Build da Imagem Docker do Flex Template
 # ----------------------------------------------------------------------
 - id: 'Buildar Imagem Docker'
   name: 'gcr.io/cloud-builders/docker'
   args:
     - 'build'
     - '-t'
-    - 'gcr.io/${_PROJECT_ID}/dataflow/bronze-hotelaria:${_TAG_NAME}'
+    - 'gcr.io/${_PROJECT_ID}/dataflow/bronze-hotelaria:${_TAG_NAME}' # Tag da imagem com a versão do commit
     - '.' # O Dockerfile está em src/bronze/
-  dir: 'dataflow-pipelines'
+  # O build é executado a partir da pasta 'dataflow-pipelines'
+  dir: 'src/bronze' # O contexto para o Dockerfile (onde ele encontra o Dockerfile, requirements, setup, e src)
 
 # ----------------------------------------------------------------------
 # PASSO 3: Push da Imagem para o Google Container Registry (GCR)
@@ -47,7 +51,8 @@ steps:
   args:
     - 'push'
     - 'gcr.io/${_PROJECT_ID}/dataflow/bronze-hotelaria:${_TAG_NAME}'
-  dir: 'dataflow-pipelines'
+  # O 'dir' não é estritamente necessário para o push, mas mantemos o contexto
+  dir: 'src/bronze'
 
 # ----------------------------------------------------------------------
 # PASSO 4: Criar o Flex Template no GCS
@@ -58,15 +63,18 @@ steps:
   args:
     - -c
     - |
+      echo "Gerando o arquivo JSON do Flex Template..."
       gcloud dataflow flex-template build gs://${_GCS_TEMPLATE_BUCKET}/templates/bronze-hotelaria.json \
         --image 'gcr.io/${_PROJECT_ID}/dataflow/bronze-hotelaria:${_TAG_NAME}' \
         --sdk-language 'PYTHON' \
         --metadata-file 'src/bronze/metadata.json' \
-        --region '${_LOCATION}'
-  dir: 'dataflow-pipelines'
+        --region '${_LOCATION}' \
+        --project '${_PROJECT_ID}'
+  # Este comando deve ser executado a partir da raiz do projeto para encontrar o metadata.json
+  dir: '.'
 
 # ----------------------------------------------------------------------
-# SAÍDA (Opcional)
+# SAÍDA (Opcional: quais artefatos o build produziu)
 # ----------------------------------------------------------------------
 images:
   - 'gcr.io/${_PROJECT_ID}/dataflow/bronze-hotelaria:${_TAG_NAME}'

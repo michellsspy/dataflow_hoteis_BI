@@ -1,62 +1,25 @@
 {
-  "name": "bronze-raw-ingestion",
-  "description": "Pipeline Bronze para ingestão de dados CSV da camada transient para o BigQuery (raw_hotelaria).",
+  "name": "bronze-hotelaria-pipeline",
+  "description": "Pipeline de ingestão de dados CSV da rede hoteleira (camada Bronze) com upsert no BigQuery.",
   "parameters": [
     {
       "name": "project",
-      "label": "GCP Project ID",
-      "helpText": "Identificador do projeto GCP que executará o job do Dataflow."
+      "label": "ID do Projeto GCP",
+      "helpText": "O ID do projeto GCP onde o BigQuery e o Dataflow serão executados.",
+      "isRuntime": true,
+      "regex": "[a-z0-9-]+"
     },
     {
-      "name": "region",
-      "label": "Região GCP",
-      "helpText": "Região onde o job Dataflow será executado (ex: us-central1)."
+      "name": "dataset",
+      "label": "Dataset de Destino BQ",
+      "helpText": "O BigQuery Dataset onde as tabelas Bronze serão criadas (ex: raw_hotelaria).",
+      "isRuntime": true
     },
     {
-      "name": "temp_location",
-      "label": "Caminho temporário (GCS)",
-      "helpText": "Local no bucket GCS usado para arquivos temporários do Dataflow."
-    },
-    {
-      "name": "staging_location",
-      "label": "Caminho de staging (GCS)",
-      "helpText": "Local no bucket GCS usado para staging de arquivos durante o build e execução."
-    },
-    {
-      "name": "bucket_transient",
-      "label": "Bucket Transient",
-      "helpText": "Nome do bucket GCS contendo os arquivos CSV a serem ingeridos (camada transient)."
-    },
-    {
-      "name": "dataset_raw",
-      "label": "Dataset destino (BigQuery)",
-      "helpText": "Nome do dataset BigQuery onde os dados processados serão gravados."
-    },
-    {
-      "name": "tables",
-      "label": "Tabelas fonte",
-      "helpText": "Lista separada por vírgulas com os nomes das tabelas a serem ingeridas (ex: source_faturas,source_hoteis)."
-    },
-    {
-      "name": "delimiter",
-      "label": "Delimitador CSV",
-      "helpText": "Símbolo usado como delimitador dos campos nos arquivos CSV (ex: ',').",
-      "defaultValue": ",",
-      "isOptional": true
-    },
-    {
-      "name": "encoding",
-      "label": "Codificação",
-      "helpText": "Tipo de codificação dos arquivos CSV (ex: utf-8, iso-8859-1).",
-      "defaultValue": "utf-8",
-      "isOptional": true
-    },
-    {
-      "name": "skip_header_lines",
-      "label": "Linhas de cabeçalho a ignorar",
-      "helpText": "Número de linhas de cabeçalho a pular nos arquivos CSV (geralmente 1).",
-      "defaultValue": "1",
-      "isOptional": true
+      "name": "gcs_input_path",
+      "label": "Caminho de Input GCS",
+      "helpText": "Caminho dos arquivos CSV de origem no GCS (ex: gs://bk-etl-hotelaria/transient/source_*/source_*.csv).",
+      "isRuntime": true
     }
   ]
 }
