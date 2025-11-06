@@ -25,7 +25,7 @@ steps:
       # O pytest é comumente usado. Assumindo que você o incluiu no requirements.txt
       # Executa os testes unitários do Apache Beam
       python -m pytest tests/test_transforms_bronze.py
-  dir: 'dataflow-pipelines/src/bronze' # Direciona o comando para a raiz do projeto
+  dir: 'dataflow-pipelines' # Direciona o comando para a raiz do projeto
 
 # ----------------------------------------------------------------------
 # PASSO 2: Build da Imagem Docker
