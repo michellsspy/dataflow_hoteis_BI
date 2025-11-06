@@ -15,6 +15,7 @@ setuptools.setup(
         # Dependências de runtime. Geralmente, você pode deixar o requirements.txt cuidar disso,
         # mas incluir o beam aqui garante a instalação do SDK.
         'apache-beam[gcp]>=2.50.0',
+        'pytest',
     ],
     # Pacotes de dependência
     # Aqui listamos os pacotes que o Dataflow deve empacotar.

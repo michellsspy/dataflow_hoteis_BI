@@ -16,4 +16,6 @@ ENV FLEX_TEMPLATE_PYTHON_PY_FILE="${WORKDIR}/src/bronze/pipeline_bronze.py"
 RUN pip install --no-cache-dir -r "${FLEX_TEMPLATE_PYTHON_REQUIREMENTS_FILE}" \
  && pip install --no-cache-dir -e .
 
+RUN pip install pytest
+
 ENTRYPOINT ["/opt/google/dataflow/python_template_launcher"]
