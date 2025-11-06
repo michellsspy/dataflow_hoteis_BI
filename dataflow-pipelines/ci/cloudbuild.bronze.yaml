@@ -19,7 +19,7 @@ steps:
     - |
       echo "Instalando dependências..."
       pip install -r src/bronze/requirements.txt
-      pip install -e . # Instala o projeto localmente via setup.py
+      pip install -e src/bronze/setup.py # Instala o projeto localmente via setup.py
       
       echo "Rodando Testes da Camada Bronze..."
       # O pytest é comumente usado. Assumindo que você o incluiu no requirements.txt
