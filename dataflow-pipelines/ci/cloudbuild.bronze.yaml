@@ -71,3 +71,10 @@ steps:
 # ----------------------------------------------------------------------
 images:
   - 'gcr.io/${_PROJECT_ID}/dataflow/bronze-hotelaria:${_TAG_NAME}'
+
+# ----------------------------------------------------------------------
+# OPÇÕES DE BUILD: Define o logging para CLOUD_LOGGING_ONLY
+# Resolve o erro 'build.service_account' ao usar SA personalizada.
+# ----------------------------------------------------------------------
+options:
+  logging: CLOUD_LOGGING_ONLY
