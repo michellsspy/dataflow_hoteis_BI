@@ -7,7 +7,6 @@
 # _LOCATION: Região onde o Dataflow será executado (ex: us-central1).
 # _TAG_NAME: Versão ou hash do commit (ex: latest ou $COMMIT_SHA).
 
-
 steps:
 # ----------------------------------------------------------------------
 # PASSO 1: Configuração e Testes
