@@ -21,10 +21,10 @@ steps:
       echo "Instalando dependências de build e teste..."
       
       # 1. Instala dependências (requirements.txt está em src/bronze)
-      pip install -r dataflow-pipelines/src/bronze/requirements.txt
+      pip install -r requirements.txt
       
       # 2. Instala o projeto (o diretório que contém o setup.py)
-      pip install -e dataflow-pipelines/src/bronze
+      pip install -e .
       
       echo "Executando testes..."
       # 3. Executa os testes (caminho completo)

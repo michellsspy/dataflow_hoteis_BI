@@ -7,7 +7,7 @@ import setuptools
 # O pacote é 'bronze'.
 
 setuptools.setup(
-    name='dataflow-hotelaria-bronze',
+    name='dataflow-hotelaria',
     version='1.0.0',
     packages=setuptools.find_packages(where='src'),
     package_dir={'': 'src'},
