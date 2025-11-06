@@ -4,16 +4,49 @@ import unittest
 import apache_beam as beam
 from apache_beam.testing.test_pipeline import TestPipeline
 from apache_beam.testing.util import assert_that, equal_to
+import re
+from typing import List, Dict, Any
 
 # Importa as funções e classes do nosso módulo de transformações
-# Assumimos que o path do projeto está configurado corretamente para o import relativo
 from src.bronze.functions.transforms_bronze import AddAuditColumns, extract_table_name
-import datetime
-import re
+
+# Expressão regular para verificar o formato do timestamp ISO
+# O Beam usa o formato ISO: YYYY-MM-DDTHH:MM:SS.mmmmmm
+TIMESTAMP_REGEX = r'\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{6}'
+
+# 🎯 FUNÇÃO DE ASSERÇÃO GLOBAL: Não deve usar 'self' para evitar erros de pickling.
+def check_audit_columns(actual: List[Dict[str, Any]]):
+    """
+    Função global de asserção para verificar se os registros contêm as colunas
+    de auditoria e se os tipos estão corretos.
+    """
+    # 1. Verifica se o número de registros está correto
+    assert len(actual) == 2, f"Esperado 2 registros, encontrado {len(actual)}"
+    
+    for record in actual:
+        # 2. Verifica se as colunas originais estão presentes (simples sanity check)
+        assert 'id_hospede' in record, "Falta a chave 'id_hospede'"
+        assert 'cpf' in record, "Falta a chave 'cpf'"
+        
+        # 3. Verifica a presença das colunas de auditoria
+        assert 'insert_date' in record, "Falta a coluna 'insert_date'"
+        assert 'update_date' in record, "Falta a coluna 'update_date'"
+        assert 'primary_key_bronze' in record, "Falta a coluna 'primary_key_bronze'"
+        
+        # 4. Verifica o formato do timestamp (essencial)
+        assert re.match(TIMESTAMP_REGEX, record['insert_date']), \
+            f"Formato de insert_date inválido: {record['insert_date']}"
+        assert re.match(TIMESTAMP_REGEX, record['update_date']), \
+            f"Formato de update_date inválido: {record['update_date']}"
+            
+        # 5. Verifica se a chave de hash é um tipo inteiro (evita problemas de determinismo)
+        assert isinstance(record['primary_key_bronze'], int), \
+            f"primary_key_bronze não é inteiro, é {type(record['primary_key_bronze'])}"
+
 
 class TestBronzeTransforms(unittest.TestCase):
     
-    # --- Testes da Função extract_table_name ---
+    # --- Testes da Função extract_table_name (Nenhum Pickling, OK) ---
     
     def test_extract_table_name_consumos(self):
         """Testa a extração do nome da tabela para consumos."""
@@ -37,50 +70,22 @@ class TestBronzeTransforms(unittest.TestCase):
     
     def test_add_audit_columns_logic(self):
         """
-        Testa se as colunas insert_date, update_date e primary_key_bronze
-        são adicionadas corretamente.
+        Testa a transformação de adição de colunas de auditoria no pipeline.
         """
-        # Entrada de dados (como se tivesse vindo do parser CSV)
         test_data = [
             {'id_hospede': 'H123', 'nome': 'Maria', 'cpf': '111.222.333-44'},
             {'id_hospede': 'H456', 'nome': 'João', 'cpf': '555.666.777-88'},
         ]
         
-        # Expressão regular para verificar o formato do timestamp ISO
-        timestamp_regex = r'\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{6}'
-        
-        # Cria um pipeline de teste
         with TestPipeline() as p:
-            # Aplica a transformação
             output = (
                 p 
                 | 'CreateData' >> beam.Create(test_data)
                 | 'AddAudit' >> beam.ParDo(AddAuditColumns())
             )
 
-            # Assertions: Verifica cada elemento da saída
-            def check_results(actual):
-                self.assertEqual(len(actual), 2)
-                
-                for record in actual:
-                    # 1. Verifica se as colunas originais estão presentes
-                    self.assertIn('id_hospede', record)
-                    self.assertIn('cpf', record)
-                    
-                    # 2. Verifica se as colunas de auditoria foram adicionadas
-                    self.assertIn('insert_date', record)
-                    self.assertIn('update_date', record)
-                    self.assertIn('primary_key_bronze', record)
-                    
-                    # 3. Verifica o formato do timestamp
-                    self.assertTrue(re.match(timestamp_regex, record['insert_date']))
-                    self.assertTrue(re.match(timestamp_regex, record['update_date']))
-                    
-                    # 4. Verifica se a chave de hash foi gerada (deve ser um inteiro)
-                    self.assertIsInstance(record['primary_key_bronze'], int)
-
-            # Executa a verificação no final do pipeline de teste
-            assert_that(output, check_results)
+            # Executa a verificação usando a função global, que é serializável.
+            assert_that(output, check_audit_columns)
 
 # Ponto de entrada para o unittest se for executado diretamente
 if __name__ == '__main__':
