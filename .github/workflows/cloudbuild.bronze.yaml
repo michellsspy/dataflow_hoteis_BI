@@ -6,6 +6,9 @@
 # _LOCATION: southamerica-east1
 # COMMIT_SHA (Variável embutida do Cloud Build)
 
+options:
+  logging: CLOUD_LOGGING_ONLY
+
 steps:
 # ----------------------------------------------------------------------
 # PASSO 1: Instalação de Dependências e Testes de Unidade
@@ -74,6 +77,20 @@ steps:
         --project '${_PROJECT_ID}'
         # A REGIÃO é definida na execução do template, não no build.
   dir: '.'
-  
-options:
-  logging: CLOUD_LOGGING_ONLY
+
+# ----------------------------------------------------------------------
+# Passo 5: Executar o Job Dataflow (Deploy Automático)
+# ----------------------------------------------------------------------
+- name: 'gcr.io/cloud-builders/gcloud'
+  id: 'Executar Job Bronze'
+  entrypoint: 'bash'
+  args:
+    [
+      '-c',
+      'gcloud dataflow jobs run etl-bronze-$COMMIT_SHA \
+       --gcp-temp-location "gs://bk-etl-hotelaria/temp" \
+       --template-file-gcs-location "gs://bk-etl-hotelaria/templates/template-etl-bronze.json" \
+       --parameters dataset_id="bronze_hotelaria",gcs_bucket_name="bk-etl-hotelaria",gcs_transient_prefix="transient/" \
+       --region "us-east1" \
+       --project "$PROJECT_ID"',
+    ]
