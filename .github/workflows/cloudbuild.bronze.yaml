@@ -28,7 +28,7 @@ steps:
       
       echo "Executando testes..."
       # 3. Executa os testes (caminho completo)
-      python -m pytest dataflow-pipelines/tests/test_transforms_bronze.py
+      python -m pytest tests/test_transforms_bronze.py
       
   dir: 'dataflow-pipelines' # Executa a partir da raiz do repositório, usando os caminhos longos acima.
 
