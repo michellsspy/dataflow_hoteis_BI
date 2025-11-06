@@ -42,7 +42,7 @@ steps:
     - '-t'
     - 'gcr.io/${_PROJECT_ID}/dataflow/bronze-hotelaria:$COMMIT_SHA'
     - '-f' 
-    - 'dataflow-pipelines/src/bronze/Dockerfile' 
+    - 'dataflow-pipelines/Dockerfile' 
     - 'dataflow-pipelines' 
   dir: '.' 
 
