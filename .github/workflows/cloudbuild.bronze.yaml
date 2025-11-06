@@ -66,12 +66,13 @@ steps:
     - -c
     - |
       echo "Gerando o arquivo JSON do Flex Template..."
+      # Usamos --region aqui para especificar a região da API.
       gcloud dataflow flex-template build gs://${_GCS_TEMPLATE_BUCKET}/templates/bronze-hotelaria.json \
         --image 'gcr.io/${_PROJECT_ID}/dataflow/bronze-hotelaria:$COMMIT_SHA' \
         --sdk-language 'PYTHON' \
         --metadata-file 'dataflow-pipelines/src/bronze/metadata.json' \
-        --region '${_LOCATION}' \
-        --project '${_PROJECT_ID}'
+        --project '${_PROJECT_ID}' \
+        --region '${_LOCATION}' # <--- MANTEMOS A REGIÃO AQUI, mas GARANTIMOS QUE ELA SEJA A DA API
   dir: '.'
   
 options:
