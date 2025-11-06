@@ -5,7 +5,8 @@ import apache_beam as beam
 from apache_beam.testing.test_pipeline import TestPipeline
 from apache_beam.testing.util import assert_that, equal_to
 import re
-from typing import List, Dict, Any
+# Removendo List, Dict, Any, pois vamos evitar a tipagem de entrada da função de asserção
+# from typing import List, Dict, Any 
 
 # Importa as funções e classes do nosso módulo de transformações
 from src.bronze.functions.transforms_bronze import AddAuditColumns, extract_table_name
@@ -14,16 +15,22 @@ from src.bronze.functions.transforms_bronze import AddAuditColumns, extract_tabl
 # O Beam usa o formato ISO: YYYY-MM-DDTHH:MM:SS.mmmmmm
 TIMESTAMP_REGEX = r'\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{6}'
 
-# 🎯 FUNÇÃO DE ASSERÇÃO GLOBAL: Não deve usar 'self' para evitar erros de pickling.
-def check_audit_columns(actual: List[Dict[str, Any]]):
+# 🎯 FUNÇÃO DE ASSERÇÃO GLOBAL CORRIGIDA: Entrada sem List[] para evitar TypeCheckError.
+def check_audit_columns(actual):
     """
     Função global de asserção para verificar se os registros contêm as colunas
     de auditoria e se os tipos estão corretos.
-    """
-    # 1. Verifica se o número de registros está correto
-    assert len(actual) == 2, f"Esperado 2 registros, encontrado {len(actual)}"
     
-    for record in actual:
+    A entrada 'actual' é um Iterable (PCollection), não uma List.
+    """
+    
+    # Converte o Iterable (elementos da PCollection) para uma lista para contagem e iteração segura.
+    actual_list = list(actual) 
+    
+    # 1. Verifica se o número de registros está correto
+    assert len(actual_list) == 2, f"Esperado 2 registros, encontrado {len(actual_list)}"
+    
+    for record in actual_list:
         # 2. Verifica se as colunas originais estão presentes (simples sanity check)
         assert 'id_hospede' in record, "Falta a chave 'id_hospede'"
         assert 'cpf' in record, "Falta a chave 'cpf'"
@@ -34,6 +41,7 @@ def check_audit_columns(actual: List[Dict[str, Any]]):
         assert 'primary_key_bronze' in record, "Falta a coluna 'primary_key_bronze'"
         
         # 4. Verifica o formato do timestamp (essencial)
+        # Usamos o re.match aqui pois o assert_that roda dentro de um ParDo que não serializa unittest.TestCase asserts
         assert re.match(TIMESTAMP_REGEX, record['insert_date']), \
             f"Formato de insert_date inválido: {record['insert_date']}"
         assert re.match(TIMESTAMP_REGEX, record['update_date']), \
@@ -46,7 +54,7 @@ def check_audit_columns(actual: List[Dict[str, Any]]):
 
 class TestBronzeTransforms(unittest.TestCase):
     
-    # --- Testes da Função extract_table_name (Nenhum Pickling, OK) ---
+    # --- Testes da Função extract_table_name (OK) ---
     
     def test_extract_table_name_consumos(self):
         """Testa a extração do nome da tabela para consumos."""
@@ -84,7 +92,7 @@ class TestBronzeTransforms(unittest.TestCase):
                 | 'AddAudit' >> beam.ParDo(AddAuditColumns())
             )
 
-            # Executa a verificação usando a função global, que é serializável.
+            # Executa a verificação usando a função global.
             assert_that(output, check_audit_columns)
 
 # Ponto de entrada para o unittest se for executado diretamente
