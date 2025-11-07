@@ -1,4 +1,22 @@
 # CLOUD BUILD CAMADA BRONZE
+
+# Preparação para funcionar o build
+
+#--->>> Conceder as seguintes permições na conta de serviço
+# roles/dataflow.admin
+# roles/dataflow.worker
+# roles/storage.objectAdmin
+# roles/artifactregistry.reader
+
+#--->> Set project - Rodar os comando abaixo no prompt
+# gcloud auth application-default set-quota-project etl-hoteis
+
+# gcloud artifacts repositories create etl-hotelaria \
+#     --repository-format=docker \
+#     --location=us-central1
+
+# gcloud auth configure-docker us-central1-docker.pkg.dev
+
 steps:
   # PASSO 2: Build da Imagem Docker do Flex Template
   - id: 'Buildar Imagem Docker'
@@ -9,7 +27,7 @@ steps:
       - 'us-central1-docker.pkg.dev/${_PROJECT_ID}/etl-hotelaria/hotelaria-dev:latest'
       - '-f' 
       - 'pipelines/bronze/Dockerfile' 
-      - 'pipelines' 
+      - 'pipelines/bronze' 
     dir: '.' 
 
 options:
