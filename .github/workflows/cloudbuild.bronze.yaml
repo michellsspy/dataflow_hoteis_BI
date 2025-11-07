@@ -6,7 +6,7 @@ steps:
     args:
       - 'build'
       - '-t'
-      - 'gcr.io/${_PROJECT_ID}/etl-hotelaria/hotelaria-dev:latest'
+      - 'us-central1-docker.pkg.dev/${_PROJECT_ID}/etl-hotelaria/hotelaria-dev:latest'
       - '-f' 
       - 'pipelines/bronze/Dockerfile' 
       - 'pipelines' 
