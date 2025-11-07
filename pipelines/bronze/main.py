@@ -65,4 +65,4 @@ def main_transient_to_raw():
                 | "Exibir Resultados" >> beam.Map(print)
             )
 
-            
+        
