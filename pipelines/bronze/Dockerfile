@@ -1,21 +1,26 @@
-FROM gcr.io/dataflow-templates-base/python39-template-launcher-base
+#Pegando uma imagem mais leve do python
+FROM python:3.10-slim
+COPY --from=apache/beam_python3.10_sdk:2.55.0 /opt/apache/beam /opt/apache/beam
+COPY --from=gcr.io/dataflow-templates-base/python310-template-launcher-base:20230622_RC00 /opt/google/dataflow/python_template_launcher /opt/google/dataflow/python_template_launcher
 
-ENV WORKDIR=/dataflow/template
+ARG WORKDIR=/template
 WORKDIR ${WORKDIR}
 
-# Se usar requirements únicos por camada, copie da camada:
-# (ou use um requirements único na raiz, se preferir)
-COPY requirements.txt ${WORKDIR}/requirements.txt
-COPY setup.py ${WORKDIR}/setup.py
-COPY src ${WORKDIR}/src
+# Variáveis específicas do template
+ENV FLEX_TEMPLATE_PYTHON_PY_FILE=${WORKDIR}/main.py
+ENV FLEX_TEMPLATE_PYTHON_SETUP_FILE=${WORKDIR}/setup.py
+ENV FLEX_TEMPLATES_TAIL_CMD_TIMEOUT_IN_SECS=30
+ENV FLEX_TEMPLATES_NUM_LOG_LINES=1000
 
-ENV FLEX_TEMPLATE_PYTHON_REQUIREMENTS_FILE="${WORKDIR}/requirements.txt"
-ENV FLEX_TEMPLATE_PYTHON_SETUP_FILE="${WORKDIR}/setup.py"
-ENV FLEX_TEMPLATE_PYTHON_PY_FILE="${WORKDIR}/src/bronze/pipeline_bronze.py"
+# Copiando código
+COPY . .
 
-RUN pip install --no-cache-dir -r "${FLEX_TEMPLATE_PYTHON_REQUIREMENTS_FILE}" \
- && pip install --no-cache-dir -e .
+# Instalando dependências
+RUN pip install --upgrade pip && pip install -U -r requirements.txt
 
-RUN pip install pytest
+RUN ls -la /opt/apache/beam && \
+    ls -la /opt/google/dataflow/python_template_launcher && \
+    ls -la ${WORKDIR}
 
-ENTRYPOINT ["/opt/google/dataflow/python_template_launcher"]
+# Entrypoint
+ENTRYPOINT ["/opt/apache/beam/boot"]
