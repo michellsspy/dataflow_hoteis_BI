@@ -5,7 +5,7 @@ steps:
     args:
       - 'build'
       - '-t'
-      - 'gcr.io/${_PROJECT_ID}/dataflow/bronze-hotelaria:$COMMIT_SHA'
+      - 'gcr.io/${_PROJECT_ID}/etl-hotelaria/hotelaria-dev:latest'
       - '-f' 
       - 'pipelines/bronze/Dockerfile' 
       - 'pipelines' 
