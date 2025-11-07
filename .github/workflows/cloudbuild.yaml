@@ -1,59 +1,15 @@
-name: Cloud Build - Submeter Imagem Docker
+steps:
+  # PASSO 2: Build da Imagem Docker do Flex Template
+  - id: 'Buildar Imagem Docker'
+    name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '-t'
+      - 'gcr.io/${_PROJECT_ID}/dataflow/bronze-hotelaria:$COMMIT_SHA'
+      - '-f' 
+      - 'pipelines/bronze/Dockerfile' 
+      - 'pipelines' 
+    dir: '.' 
 
-# 1. Gatilho (Trigger)
-# Este workflow será executado em todos os pushes para qualquer branch.
-on:
-  push:
-    branches:
-      - '**' # Executa em todos os branches
-
-# 2. Permissões de Concorrência
-# Garante que apenas um build seja executado por vez para o mesmo commit.
-concurrency:
-  group: ${{ github.ref }}
-  cancel-in-progress: true
-
-# 3. Definição dos Jobs (Tarefas)
-jobs:
-  cloud_build:
-    name: Submeter Build para o Google Cloud
-    runs-on: ubuntu-latest
-    
-    # 4. Variáveis de Ambiente
-    # Define as variáveis que serão usadas no comando 'gcloud'.
-    env:
-      GCP_PROJECT_ID: etl-hoteis
-      GCP_REGION: us-central1
-      AR_REPOSITORY: etl-hotelaria
-      IMAGE_NAME: hotelaria-dev
-      IMAGE_TAG: latest
-      
-    # 5. Passos (Steps)
-    steps:
-      # A. Checkout do Código
-      - name: Checkout do Repositório
-        uses: actions/checkout@v4
-        
-      # B. Autenticação no Google Cloud
-      - name: Autenticar no Google Cloud
-        # Utiliza uma action oficial para configurar o gcloud
-        uses: 'google-github-actions/auth@v2'
-        with:
-          # A chave da sua conta de serviço (Service Account)
-          credentials_json: ${{ secrets.GCP_SA_KEY }}
-
-      # C. Configuração do Docker para o Artifact Registry
-      - name: Configurar o Docker para o Artifact Registry
-        # Configura o Docker local para se autenticar no Artifact Registry
-        run: gcloud auth configure-docker ${{ env.GCP_REGION }}-docker.pkg.dev
-        
-      # D. Execução do Cloud Build
-      - name: Executar GCloud Builds Submit
-        run: |
-          IMAGE_PATH="${{ env.GCP_REGION }}-docker.pkg.dev/${{ env.GCP_PROJECT_ID }}/${{ env.AR_REPOSITORY }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}"
-          
-          # Comando essencial: submete o build do Dockerfile no diretório atual (.)
-          gcloud builds submit --tag "$IMAGE_PATH" .
-        
-      - name: Build Submetido com Sucesso
-        run: echo "O build da imagem Docker foi submetido e está a ser construído."
+options:
+  logging: CLOUD_LOGGING_ONLY
