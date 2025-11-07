@@ -64,3 +64,5 @@ def main_transient_to_raw():
                 | "Processar Tabelas do BigQuery" >> beam.ParDo(BQToParquet())
                 | "Exibir Resultados" >> beam.Map(print)
             )
+
+            
