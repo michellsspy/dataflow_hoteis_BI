@@ -1,3 +1,4 @@
+# CLOUD BUILD CAMADA BRONZE
 steps:
   # PASSO 2: Build da Imagem Docker do Flex Template
   - id: 'Buildar Imagem Docker'
