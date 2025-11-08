@@ -10,6 +10,8 @@ import os
 
 # Importando as Funções
 from functions.get_secret import get_secret, save_secret_to_temp_file
+from options.options import func_options
+from classes.upsert_bronze import ParquetToBQ
 
 # Recupera a chave e salva temporariamente
 key_data = get_secret()
@@ -18,51 +20,31 @@ key_path = save_secret_to_temp_file(key_data)
 # Configura as credenciais do GCP
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = key_path
 
-def main_transient_to_raw():
-    data_now = datetime.now().strftime("%Y%m%d")
-    argv = sys.argv
-    options = PipelineOptions(
-        project = 'etl-hoteis',
-        runner = 'DataflowRunner',
-        streaming = False,
-        job_name = f"etl-hotelaria-{data_now}",
-        temp_location = 'gs://bk-etl-hotelaria/temp',
-        staging_location = 'gs://bk-etl-hotelaria/staging',
-        #template_location = f'gs://bk-etl-hotelaria/templates/etl-hotelaria-{data_now}',
-        autoscaling_algorithm = 'THROUGHPUT_BASED',
-        worker_machine_type = 'n1-standard-4',
-        num_workers = 1,
-        max_num_workers = 3,
-        disk_size_gb = 25,
-        region = 'us-central1',
-        #zone = 'us-central1-c',
-        #worker_zone = 'us-central1-a',
-        project_id = 'etl-hoteis',
-        staging_bucket = 'bk-etl-hotelaria',
-        save_main_session = False,
-        #experiments = 'use_runner_v2',
-        prebuild_sdk_container_engine = 'cloud_build',
-        docker_registry_push_url = 'us-central1-docker.pkg.dev/etl-hoteis/etl-hotelaria/hotelaria-dev',
-        sdk_container_image = 'us-central1-docker.pkg.dev/etl-hoteis/etl-hotelaria/hotelaria-dev:latest',
-        sdk_location = 'container',
-        requirements_file = './tx/requirements.txt',
-        metabase_file = './metadata.json',
-        setup_file = './setup.py',
-        service_account_email = 'etl-743@etl-hoteis.iam.gserviceaccount.com'
-    )
+# Recebe a data atual
+data_now = datetime.now().strftime("%Y%m%d")
+
+# Lista das tabelas para carga
+tables_names = [
+    "hoteis",   
+    "consumos",
+    "faturas",
+    "hospedes",
+    "quartos",
+    "reservas",
+    "reservas_ota"
+]
+
+def main_transient_to_raw(data_now):
+
+    options = func_options(data_now)
     
     with beam.Pipeline(options=options) as p:
             tables = (
                 p
-                | "Start PCollection" >> beam.Create([None])
-                | "Get Tables Names" >> beam.ParDo(GetTablesName())
+                | "Create Table List" >> beam.Create(tables_names)
+                | 'Process Tables' >> beam.ParDo(ParquetToBQ())
+                | 'Print Results' >> beam.Map(print)
             )
 
-            # Processo para copiar e salvar como Parquet
-            (
-                tables
-                | "Processar Tabelas do BigQuery" >> beam.ParDo(BQToParquet())
-                | "Exibir Resultados" >> beam.Map(print)
-            )
-
-        
+if __name__ == "__main__":
+      main_transient_to_raw(data_now)
