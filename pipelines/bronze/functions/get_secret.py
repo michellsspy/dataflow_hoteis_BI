@@ -6,7 +6,7 @@ import os
 def get_secret():
     # Recuperando a secret
     PROJECT_ID = "992325149095"
-    SECRET_NAME = "etl-hoteis"  # Nome do Secret salvo no Secret Manager
+    SECRET_NAME = "secret-hoteis"  # Nome do Secret salvo no Secret Manager
 
     """Recupera o secret do Secret Manager."""
     try:

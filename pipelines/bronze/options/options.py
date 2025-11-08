@@ -12,7 +12,8 @@ def func_options(data_now):
     return PipelineOptions(
         flags=argv,
         project=project_id,
-        runner = "DataflowRunner",
+        runner = "DataflowRunner", # Executa no dataflow
+        #runner = "DirectRunner", # Exectua localmente
         streaming = False,
         job_name = f"etl-hotelaria-{data_now}",
         temp_location = "gs://bk-etl-hotelaria/temp",
