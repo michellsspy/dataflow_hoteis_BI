@@ -1,4 +1,4 @@
-FROM apache/beam_python3.11_sdk:2.57.0
+FROM apache/beam_python3.12_sdk:2.58.0
 
 # Define o diretório de trabalho
 ARG WORKDIR=/template
