@@ -10,3 +10,4 @@ gcsfs
 google-cloud-secret-manager
 pandas-gbq 
 google-cloud-bigquery
+build
