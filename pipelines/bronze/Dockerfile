@@ -1,26 +1,20 @@
-#Pegando uma imagem mais leve do python
-FROM python:3.10-slim
-COPY --from=apache/beam_python3.10_sdk:2.55.0 /opt/apache/beam /opt/apache/beam
-COPY --from=gcr.io/dataflow-templates-base/python310-template-launcher-base:20230622_RC00 /opt/google/dataflow/python_template_launcher /opt/google/dataflow/python_template_launcher
+FROM apache/beam_python3.11_sdk:2.57.0
 
+# Define o diretório de trabalho
 ARG WORKDIR=/template
 WORKDIR ${WORKDIR}
 
-# Variáveis específicas do template
+# Copia o código do template
+COPY . .
+
+# Instala as dependências do pipeline
+RUN pip install --upgrade pip && pip install -r requirements.txt
+
+# Variáveis de ambiente obrigatórias
 ENV FLEX_TEMPLATE_PYTHON_PY_FILE=${WORKDIR}/main.py
 ENV FLEX_TEMPLATE_PYTHON_SETUP_FILE=${WORKDIR}/setup.py
 ENV FLEX_TEMPLATES_TAIL_CMD_TIMEOUT_IN_SECS=30
 ENV FLEX_TEMPLATES_NUM_LOG_LINES=1000
 
-# Copiando código
-COPY . .
-
-# Instalando dependências
-RUN pip install --upgrade pip && pip install -U -r requirements.txt
-
-RUN ls -la /opt/apache/beam && \
-    ls -la /opt/google/dataflow/python_template_launcher && \
-    ls -la ${WORKDIR}
-
-# Entrypoint
+# Usa o launcher oficial do Beam (já incluído)
 ENTRYPOINT ["/opt/apache/beam/boot"]
