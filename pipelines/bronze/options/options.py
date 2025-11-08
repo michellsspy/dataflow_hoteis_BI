@@ -38,5 +38,5 @@ def func_options(data_now):
         requirements_file = "./requirements.txt",
         metabase_file = "./metadata.json",
         setup_file = "./setup.py",
-        service_account_email = "etl-743@etl-hoteis.iam.gserviceaccount.com"
+        service_account_email = "etl-hoteis@etl-hoteis.iam.gserviceaccount.com"
     )
