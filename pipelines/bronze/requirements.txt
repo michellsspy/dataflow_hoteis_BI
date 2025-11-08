@@ -11,3 +11,5 @@ google-cloud-secret-manager
 pandas-gbq 
 google-cloud-bigquery
 build
+setuptools
+wheel

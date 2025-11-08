@@ -1,0 +1,41 @@
+{
+  "name": "bronze-pipeline",
+  "description": "Pipeline responsável por copiar dados da camada transient para a camada bronze do projeto Hotelaria.",
+  "parameters": [
+    {
+      "name": "input_bucket",
+      "label": "Bucket de entrada",
+      "helpText": "Caminho do bucket onde estão os dados transient.",
+      "paramType": "TEXT",
+      "isOptional": false
+    },
+    {
+      "name": "output_dataset",
+      "label": "Dataset de destino (BigQuery)",
+      "helpText": "Dataset de destino no BigQuery onde serão gravados os dados bronze.",
+      "paramType": "TEXT",
+      "isOptional": false
+    },
+    {
+      "name": "project_id",
+      "label": "Projeto GCP",
+      "helpText": "ID do projeto GCP usado para execução do pipeline.",
+      "paramType": "TEXT",
+      "isOptional": false
+    },
+    {
+      "name": "temp_location",
+      "label": "Local temporário",
+      "helpText": "Caminho temporário no GCS usado pelo Dataflow.",
+      "paramType": "TEXT",
+      "isOptional": false
+    }
+  ],
+  "sdk_info": {
+    "language": "PYTHON"
+  },
+  "flexTemplateSpec": {
+    "image": "us-central1-docker.pkg.dev/etl-hoteis/etl-hotelaria/hotelaria-dev:latest",
+    "sdkLanguage": "PYTHON"
+  }
+}
