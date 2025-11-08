@@ -1,6 +1,6 @@
 pyarrow
 pandas
-apache-beam[gcp]==2.57.0
+apache-beam[gcp]==2.55.0
 google-cloud-storage
 setuptools
 apache_beam[dataframe]
