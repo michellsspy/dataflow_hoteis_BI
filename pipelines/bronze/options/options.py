@@ -18,7 +18,7 @@ def func_options(data_now):
         job_name = f"etl-hotelaria-{data_now}",
         temp_location = "gs://bk-etl-hotelaria/temp",
         staging_location = "gs://bk-etl-hotelaria/staging",
-        #template_location = f"gs://bk-etl-hotelaria/templates/etl-hotelaria-{data_now}",
+        #template_location = f"gs://bk-etl-hotelaria/templates/template-hotelaria-{data_now}",
         autoscaling_algorithm = "THROUGHPUT_BASED",
         worker_machine_type = "n1-standard-4",
         num_workers = 1,
