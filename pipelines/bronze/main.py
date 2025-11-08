@@ -21,7 +21,7 @@ key_path = save_secret_to_temp_file(key_data)
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = key_path
 
 # Recebe a data atual
-data_now = datetime.now().strftime("%Y%m%d")
+data_now = datetime.now().strftime("%Y%m%d%H%M%S")
 
 # Lista das tabelas para carga
 tables_names = [
